@@ -4,18 +4,20 @@
 #include "stdafx.h"
 #include "PP5_Base_App.h"
 #include <iostream>
-
+#include "DirectXVault.h"
 #define MAX_LOADSTRING 100
 
 // Global Variables:
 HINSTANCE hInst;    
 FBXinteracts::Functions yee;
+std::vector<float> MeshPositions;
 // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 HWND hWnd;
 int width = 1080;
 int height = 920;
+DirectXVault DXVault;
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -42,7 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     {
         return FALSE;
     }
-	yee.SetupFBX();
+
 	//Immediately after the call to InitInstance(but outside the scope of the if - check), add the following code :
 	//This will spawn a console at start-up with our window when in debug mode.
 #ifndef NDEBUG
@@ -51,7 +53,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	freopen_s(&new_std_in_out, "CONOUT$", "w", stdout);
 	freopen_s(&new_std_in_out, "CONIN$", "r", stdin);
 	std::cout << "Hello world!\n";
-	std::cout << yee.GimmeSomething();
+	yee.SetupFBX();
+	MeshPositions = yee.getPositions();
+	DXVault.Start(hWnd, MeshPositions);
+	//std::cout << yee.GimmeSomething();
 	
 #endif
 
@@ -67,6 +72,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+		DXVault.Render();
     }
 	//Add the following code immediately before the final return in the wWinMain function:
 #ifndef NDEBUG
@@ -120,7 +126,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
     hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0,WIDTH,HEIGHT, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {

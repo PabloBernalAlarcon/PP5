@@ -6,6 +6,7 @@
 #endif
 
 //#include <fbxsdk.h>
+#include <vector>
 
 //namespace fbxsdk
 //{
@@ -14,18 +15,30 @@
 
 namespace FBXinteracts
 {
+	using namespace std;
 	// This class is exported from the MathLibrary.dll  
 	class Functions
 	{
 	private:
-	
+		
 	public:
-
+		
 		// Returns a + b  
 		static FBXINTERACTION_API int  GimmeSomething();
 
 		static FBXINTERACTION_API void SetupFBX();
 
+		static FBXINTERACTION_API  vector<float> getPositions();
+
+
+
+//		static FBXINTERACTION_API void PrintNode(FbxNode* pNode);
+
+		//static FBXINTERACTION_API void PrintTabs();
+
+		//static FBXINTERACTION_API  void PrintAttribute(FbxNodeAttribute* pAttribute);
+
+//		static FBXINTERACTION_API FbxString GetAttributeTypeName(FbxNodeAttribute::EType type);
 	};
 }
 

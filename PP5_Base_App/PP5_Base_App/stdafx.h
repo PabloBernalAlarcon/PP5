@@ -19,3 +19,8 @@
 #include "FBXInteraction.h"
 
 // TODO: reference additional headers your program requires here
+#define WIDTH 500
+#define HEIGHT 500
+
+#include "trivial_VS.csh"
+#include "trivial_PS.csh"
