@@ -1,7 +1,12 @@
 ﻿  FBXInteraction.cpp
-c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(82): warning C4018: '<': signed/unsigned mismatch
-c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(85): warning C4244: 'argument': conversion from 'fbxsdk::FbxDouble' to 'const float', possible loss of data
-c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(86): warning C4244: 'argument': conversion from 'fbxsdk::FbxDouble' to 'const float', possible loss of data
-c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(87): warning C4244: 'argument': conversion from 'fbxsdk::FbxDouble' to 'const float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(80): warning C4018: '<': signed/unsigned mismatch
+c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(85): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(86): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(87): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(88): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(109): warning C4018: '<': signed/unsigned mismatch
+c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(112): warning C4244: 'argument': conversion from 'fbxsdk::FbxDouble' to 'const float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(113): warning C4244: 'argument': conversion from 'fbxsdk::FbxDouble' to 'const float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\fbxmagic\fbxinteraction.cpp(114): warning C4244: 'argument': conversion from 'fbxsdk::FbxDouble' to 'const float', possible loss of data
   FBXMagic.vcxproj -> C:\Users\Pablo\Desktop\PP5\PP5_Base_App\Debug\FBXMagic.dll
   FBXMagic.vcxproj -> C:\Users\Pablo\Desktop\PP5\PP5_Base_App\Debug\FBXMagic.pdb (Full PDB)

@@ -11,6 +11,7 @@
 HINSTANCE hInst;    
 FBXinteracts::Functions yee;
 std::vector<float> MeshPositions;
+std::vector<float> vertices;
 // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
@@ -55,7 +56,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::cout << "Hello world!\n";
 	yee.SetupFBX();
 	MeshPositions = yee.getPositions();
-	DXVault.Start(hWnd, MeshPositions);
+	for (int i = 0; i < yee.getvertsSize(); i++)
+	{
+		for (int j = 0; j <= 3; j++)
+		{
+			vertices.push_back(yee.getverts(i, j));
+		}
+	}
+	DXVault.Start(hWnd,vertices);
 	//std::cout << yee.GimmeSomething();
 	
 #endif

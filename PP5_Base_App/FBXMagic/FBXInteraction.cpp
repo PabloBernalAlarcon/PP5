@@ -13,6 +13,8 @@ namespace FBXinteracts {
 	/* Tab character ("\t") counter */
 	int numTabs = 0;
 	vector<float> Positions;
+	vector<vert> becky;
+	vector<int> Indices;
 	/**
 	* Print the required number of tabs.
 	*/
@@ -63,6 +65,31 @@ namespace FBXinteracts {
 		printf("<attribute type='%s' name='%s'/>\n", typeName.Buffer(), attrName.Buffer());
 	}
 
+	void LoadNode(FbxNode * pNode) {
+
+		FbxMesh * leMesh = pNode->GetMesh();
+		for (int i = 0; i < leMesh->GetPolygonCount(); i++)
+		{
+		
+			Indices.push_back(leMesh->GetPolygonVertex(i, 0));
+			Indices.push_back(leMesh->GetPolygonVertex(i, 1));
+			Indices.push_back(leMesh->GetPolygonVertex(i, 2));
+
+		}
+		
+		for (int i = 0; i < Indices.size(); i++)
+		{
+			FbxVector4 holden = leMesh->GetControlPointAt(Indices[i]);
+
+			vert ben; 
+			ben.Position[0] = holden.mData[0];
+			ben.Position[1] = holden.mData[1];
+			ben.Position[2] = holden.mData[2];
+			ben.Position[3] = holden.mData[3];
+
+			becky.push_back(ben);
+		}
+	}
 	/**
 	* Print a node, its attributes, and all its children recursively.
 	*/
@@ -74,7 +101,7 @@ namespace FBXinteracts {
 		FbxDouble3 translation = pNode->LclTranslation.Get();
 		FbxDouble3 rotation = pNode->LclRotation.Get();
 		FbxDouble3 scaling = pNode->LclScaling.Get();
-
+		FbxString att = GetAttributeTypeName(pNode->GetNodeAttribute()->GetAttributeType());
 		/*if (Positions.size() == 0)
 		{*/
 			if (attribute[0] == data[0] && attribute[2] == data[2])
@@ -91,14 +118,18 @@ namespace FBXinteracts {
 
 		//}
 		
-		
-		// Print the contents of the node.
-		printf("<node name='%s' node att='%s' translation='(%f, %f, %f)' rotation='(%f, %f, %f)' scaling='(%f, %f, %f)'>\n",
-			nodeName, attribute,
-			translation[0], translation[1], translation[2],
-			rotation[0], rotation[1], rotation[2],
-			scaling[0], scaling[1], scaling[2]
-		);
+			if (att == "mesh")
+			{
+				// Print the contents of the node.
+				LoadNode(pNode);
+				printf("<node name='%s' node att='%s' translation='(%f, %f, %f)' rotation='(%f, %f, %f)' scaling='(%f, %f, %f)'>\n",
+					nodeName, attribute,
+					translation[0], translation[1], translation[2],
+					rotation[0], rotation[1], rotation[2],
+					scaling[0], scaling[1], scaling[2]
+				);
+			}
+
 
 		
 		numTabs++;
@@ -118,7 +149,7 @@ namespace FBXinteracts {
 	void Functions::SetupFBX() 
 	{
 		//// Change the following filename to a suitable filename value.
-		const char* lFilename = "Box_Idle.fbx";
+		const char* lFilename = "Idle.fbx";
 
 		//// Initialize the SDK manager. This object handles memory management.
 		FbxManager* lSdkManager = FbxManager::Create();
@@ -161,5 +192,13 @@ namespace FBXinteracts {
 
 	vector<float> Functions::getPositions() {
 		return Positions;
+	}
+
+	float Functions::getverts(unsigned int indicesVec, unsigned int indicesArr ) {
+		return becky[indicesVec].Position[indicesArr];
+	}
+
+	unsigned int Functions::getvertsSize() {
+		return becky.size();
 	}
 }

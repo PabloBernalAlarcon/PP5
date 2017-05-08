@@ -16,7 +16,7 @@ public:
 	
 	
 
-
+	int sizetodraw;
 	struct pipeline_state_t
 	{
 		ID3D11InputLayout *input_layout = nullptr;

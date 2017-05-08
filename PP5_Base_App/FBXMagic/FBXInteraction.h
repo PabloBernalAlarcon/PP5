@@ -15,6 +15,11 @@
 
 namespace FBXinteracts
 {
+	struct vert {
+		float Position[4];
+	};
+
+	
 	using namespace std;
 	// This class is exported from the MathLibrary.dll  
 	class Functions
@@ -30,15 +35,10 @@ namespace FBXinteracts
 
 		static FBXINTERACTION_API  vector<float> getPositions();
 
+		static FBXINTERACTION_API float getverts(unsigned int indicesVec, unsigned int indicesArr);
 
+		static FBXINTERACTION_API unsigned int getvertsSize();
 
-//		static FBXINTERACTION_API void PrintNode(FbxNode* pNode);
-
-		//static FBXINTERACTION_API void PrintTabs();
-
-		//static FBXINTERACTION_API  void PrintAttribute(FbxNodeAttribute* pAttribute);
-
-//		static FBXINTERACTION_API FbxString GetAttributeTypeName(FbxNodeAttribute::EType type);
 	};
 }
 

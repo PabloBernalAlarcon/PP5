@@ -89,14 +89,15 @@ void DirectXVault::Start(HWND window, std::vector<float> _Position) {
 
 
 	attribute.device_context->RSSetViewports(1, &attribute.viewport);
-	GimmeACamera();
+	
 	SetUpShadersForACoolTriangle();
 	BufferUpTheTriangle();
 	BufferUpTheLines();
 	BufferUpTheGrid();
+	GimmeACamera();
 	XMStoreFloat4x4(&matrix.translation, DirectX::XMMatrixIdentity());
 	XMStoreFloat4x4(&matrix.view,DirectX::XMMatrixIdentity());
-	XMStoreFloat4x4(&matrix.projection, DirectX::XMMatrixIdentity());
+	//XMStoreFloat4x4(&matrix.projection, DirectX::XMMatrixIdentity());
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //	HRESULT Resultt = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL,
@@ -139,15 +140,19 @@ void DirectXVault::Render() {
 
 
 	transPose4X4(copy.view);
+	transPose4X4(copy.translation);
+	transPose4X4(copy.projection);
+
 	attribute.device_context->UpdateSubresource(matBuffer, 0, NULL, &copy, 0, 0);
 	attribute.device_context->VSSetConstantBuffers(0, 1, &matBuffer);
 
+//	attribute.device_context->ClearDepthStencilView(pipelineState.depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	attribute.device_context->ClearRenderTargetView(attribute.render_target, DirectX::Colors::SeaGreen);
 	attribute.device_context->IASetInputLayout(pipelineState.input_layout);
 
 	DrawTheCoolestTriangle();
 	DrawTheCoolestGrid();
-	//DrawTheCoolestLines();
+	DrawTheCoolestLines();
 	attribute.swap_chain->Present(0, 0);
 }
 
@@ -290,47 +295,47 @@ void DirectXVault::BufferUpTheGrid() {
 
 }
 void DirectXVault::BufferUpTheLines() {
-	int size = Positions.size() / 3;
+	
 
-	vertex OurVerticesx[] = {
-		{ DirectX::XMFLOAT4(0.5f,0.5f,0.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT4(-0.5f,0.5f,0.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT4(0.5f,-0.5f,0.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT4(-0.5f,-0.5f,0.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT4(0.5f,0.5f,0.5f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+	
+	std::vector<vertex>  OurVerticesx;// = new std::vector<vertex>;
+	std::vector<vertex>  OurVertices2;// = new std::vector<vertex>;
 
-	};
-	/*vertex OurVerticesx[] = {
-		{ DirectX::XMFLOAT4(Positions[0],Positions[1],Positions[2],1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT4(Positions[3],Positions[4],Positions[5],1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT4(Positions[6],Positions[7],Positions[8],1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT4(Positions[9],Positions[10],Positions[11],1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT4(Positions[12],Positions[13],Positions[14],1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+	
+	for (int i = 0; i < Positions.size(); i+=4)
+	{
+		vertex v;
+		v.Position.x = Positions[i];
+		v.Position.y = Positions[i + 1];
+		v.Position.z = Positions[i + 2];
+		v.Position.w = 1.0f; //Positions[i + 3];
 
-	};*/
+		v.Color = { 1.0f,0.0f,0.0f,1.0f };
+		OurVerticesx.push_back(v);
 
+	}
 
-	//vertex OurVerticesx[] =
-	//{
-	//	{ DirectX::XMFLOAT4(0.0,0.0,0.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-	//	{ DirectX::XMFLOAT4(0.5,0.0,0.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-	//	{ DirectX::XMFLOAT4(0.0,0.0,0.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-	//	{ DirectX::XMFLOAT4(0.0,0.5,0.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
+	for (int i = 0; i < OurVerticesx.size() / 3; i++)
+	{
+		OurVertices2.push_back(OurVerticesx[i*3 +0]);
+		OurVertices2.push_back(OurVerticesx[i*3 +1]);
+		OurVertices2.push_back(OurVerticesx[i*3 +1]);
+		OurVertices2.push_back(OurVerticesx[i*3 +2]);
+		OurVertices2.push_back(OurVerticesx[i*3 +2]);
+		OurVertices2.push_back(OurVerticesx[i*3 +0]);
+	}
 
-	//	{ DirectX::XMFLOAT4(0.0,0.0,0.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-	//	{ DirectX::XMFLOAT4(0.0,0.0,0.5f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }
-	//};
-
+	sizetodraw = OurVertices2.size();
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
-	bd.ByteWidth = sizeof(vertex) * 5;    // Positions.size() /3 size is the VERTEX struct * 2 (6)
+	bd.ByteWidth = sizeof(vertex) * OurVertices2.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
 
 	D3D11_SUBRESOURCE_DATA SUBRESx;
-	SUBRESx.pSysMem = OurVerticesx;
+	SUBRESx.pSysMem = OurVertices2.data();
 	SUBRESx.SysMemPitch = 0;
 	SUBRESx.SysMemSlicePitch = 0;
 
@@ -369,10 +374,10 @@ void DirectXVault::DrawTheCoolestLines() {
 	UINT stride = sizeof(vertex);
 	UINT offset = 0;
 	//// select which primtive type we are using
-	attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	//// draw the vertex buffer to the back buffer
 	attribute.device_context->IASetVertexBuffers(0, 1, &lineBufferx, &stride, &offset);
-	attribute.device_context->Draw(5, 0);
+	attribute.device_context->Draw(sizetodraw, 0);
 
 
 }
@@ -398,15 +403,15 @@ void DirectXVault::GimmeACamera() {
 	DirectX::XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
 	DirectX::XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
 
-	XMStoreFloat4x4(&matrix.view, XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up)));
+	//XMStoreFloat4x4(&matrix.view, XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up)));
 
 	float aspectRatio = WIDTH / HEIGHT;
 	float fovAngleY = 70.0f * 3.14f / 180.0f;
 
 	DirectX::XMMATRIX projj = DirectX::XMMatrixPerspectiveFovLH(fovAngleY,aspectRatio,0.01f,100.0f);
-	XMStoreFloat4x4(&matrix.projection, XMMatrixTranspose(projj));
+	XMStoreFloat4x4(&matrix.projection, projj);
 	
-	XMStoreFloat4x4(&matrix.translation, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye, at, up)));
+	//XMStoreFloat4x4(&matrix.translation, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye, at, up)));
 	
 }
 
@@ -441,49 +446,59 @@ void DirectXVault::UpdateCamera() {
 
 	if ( GetAsyncKeyState('W'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, 0.005f);
+		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, -0.05f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
 
+		/*matrix.view._34 -= 0.05f;*/
+
 	}
 	if (GetAsyncKeyState('S'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, -0.005f);
+		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, 0.05f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
+		/*matrix.view._34 += 0.05f;*/
 	}
 	if (GetAsyncKeyState('A'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(-0.005f, 0.0f, 0.0f);
+		XMMATRIX translation = XMMatrixTranslation(0.05f, 0.0f, 0.0f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
+
+		/*matrix.view._14 += 0.05f;*/
 	}
 	if (GetAsyncKeyState('D'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.005f, 0.0f, 0.0f);
+		XMMATRIX translation = XMMatrixTranslation(-0.05f, 0.0f, 0.0f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
+
+		/*matrix.view._34 -= 0.05f;*/
 	}
 	if (GetAsyncKeyState('X'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.0f, -0.005f, 0.0f);
+		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.05f, 0.0f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
+		/*matrix.view._24 += 0.05f;*/
 	}
 
 
 
 	if (GetAsyncKeyState('B'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.005f, 0.0f * 10);
+		XMMATRIX translation = XMMatrixTranslation(0.0f, -0.05f, 0.0f * 10);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
+
+		/*matrix.view._24 -= 0.05f;*/
 	}
 
 	
