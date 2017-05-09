@@ -36,7 +36,7 @@ DirectXVault::~DirectXVault()
 }
 
 
-void DirectXVault::Start(HWND window, std::vector<float> _Position, std::vector<float> _Bones) {
+void DirectXVault::Start(HWND window, std::vector<float>& _Position, std::vector<float>& _Bones) {
 
 	wind = window;
 
@@ -352,9 +352,9 @@ void DirectXVault::BufferUpTheLines() {
 	for (int i = 0; i < Bones.size(); i += 4)
 	{
 		vertex v;
-		v.Position.x = Positions[i];
-		v.Position.y = Positions[i + 1];
-		v.Position.z = Positions[i + 2];
+		v.Position.x = Bones[i];
+		v.Position.y = Bones[i + 1];
+		v.Position.z = Bones[i + 2];
 		v.Position.w = 1.0f; //Positions[i + 3];
 
 		v.Color = { 1.0f,1.0f,1.0f,1.0f };
@@ -490,9 +490,17 @@ void DirectXVault::RandomizeStuff() {
 
 
 void DirectXVault::SetMousePos() {
+	/*
 	OldMousePos = NewMousePos;
 	GetCursorPos(&NewMousePos);
 	ScreenToClient(wind, &NewMousePos);
+	*/
+	POINT p;
+	p.x = WIDTH / 2;
+	p.y = HEIGHT / 2;
+
+	ClientToScreen(wind, &p);
+	SetCursorPos(p.x, p.y);
 }
 void DirectXVault::UpdateCamera() {
 
@@ -611,10 +619,17 @@ void DirectXVault::UpdateCamera() {
 		XMStoreFloat4x4(&matrix.translation, Result);
 	}*/
 
-	if (RMouseClick)
+		//GetKeyState(VK_RBUTTON)<0
+	if (GetKeyState(VK_RBUTTON)<0)
 	{
-		float dx = NewMousePos.x - OldMousePos.x;
-		float dy = NewMousePos.y - OldMousePos.y;
+		POINT pos;
+		GetCursorPos(&pos);
+		ScreenToClient(wind, &pos);
+		MousePos = pos;
+		float dx = (float)(MousePos.x - WIDTH/2 )/WIDTH;
+		float dy = (float)(MousePos.y - HEIGHT/2)/HEIGHT;
+
+		printf("%f, %f\n", dx, dy);
 
 		XMFLOAT4 Pos = XMFLOAT4(matrix.translation._41, matrix.translation._42, matrix.translation._43, matrix.translation._44);
 
@@ -622,8 +637,8 @@ void DirectXVault::UpdateCamera() {
 		matrix.translation._42 = 0.0f;
 		matrix.translation._43 = 0.0f;
 
-		XMMATRIX RotationX = XMMatrixRotationX(dy * 0.01f);
-		XMMATRIX RotationY = XMMatrixRotationY(dx * 0.01f);
+		XMMATRIX RotationX = XMMatrixRotationX(dy);
+		XMMATRIX RotationY = XMMatrixRotationY(dx);
 
 		XMMATRIX Temp = XMLoadFloat4x4(&matrix.translation);
 		Temp = XMMatrixMultiply(RotationX, Temp);
@@ -657,9 +672,9 @@ void DirectXVault::transPose4X4(XMFLOAT4X4 & conv) {
 }
 
 POINT DirectXVault::getCurrMousePos() {
-	return NewMousePos;
+	return MousePos;
 }
 
 void DirectXVault::setCurrMouse(POINT p) {
-	 OldMousePos = p;
+	 MousePos = p;
 }

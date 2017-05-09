@@ -197,13 +197,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     //        EndPaint(hWnd, &ps);
     //    }
     //    break;
-	case WM_RBUTTONDOWN:
+	/*case WM_RBUTTONDOWN:
 		DXVault.KeyPressed(true);
 		SetNewClick();
 		break;
 	case WM_RBUTTONUP:
 		DXVault.KeyPressed(false);
 		break;
+		*/
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

@@ -70,10 +70,10 @@ namespace FBXinteracts {
 	FbxPose * BindPose;
 	struct my_fbx_joint { FbxNode* node; int parent_index; };
 
-	void LoadBone(FbxNode * pNode) {
+	void LoadBone(FbxNode * pNode, FbxDouble3 StoredP) {
 
 
-		for (int i = 0; i < lScene->GetPoseCount(); i++)
+	/*	for (int i = 0; i < lScene->GetPoseCount(); i++)
 		{
 			if (lScene->GetPose(i)->IsBindPose())
 			{
@@ -125,24 +125,28 @@ namespace FBXinteracts {
 			Positions.push_back(translation[2]);
 			Positions.push_back(1.0f);
 
+		}*/
+		for (int i = 0; i < pNode->GetChildCount(); i++)
+		{
+			//FbxDouble3 translation = pNode->LclTranslation.Get();
+			FbxDouble3 translationChild = pNode->GetChild(i)->LclTranslation.Get();
+			Positions.push_back(StoredP[0]);
+			Positions.push_back(StoredP[1]);
+			Positions.push_back(StoredP[2]);
+			Positions.push_back(1.0f);
+
+			Positions.push_back(translationChild[0]+ StoredP[0]);
+			Positions.push_back(translationChild[1] + StoredP[1]);
+			Positions.push_back(translationChild[2] + StoredP[2]);
+			Positions.push_back(1.0f);
+
+			FbxDouble3 P;
+			P[0] = translationChild[0] + StoredP[0];
+			P[1] = translationChild[1] + StoredP[1];
+			P[2] = translationChild[2] + StoredP[2];
+			LoadBone(pNode->GetChild(i), P);
+			//me, child, call func on child
 		}
-		//for (int i = 0; i < pNode->GetChildCount(); i++)
-		//{
-		//	FbxDouble3 translation = pNode->LclTranslation.Get();
-		//	FbxDouble3 translationChild = pNode->GetChild(i)->LclTranslation.Get();
-		//	Positions.push_back(translation[0]);
-		//	Positions.push_back(translation[1]);
-		//	Positions.push_back(translation[2]);
-		//	Positions.push_back(1.0f);
-
-		//	Positions.push_back(translationChild[0]);
-		//	Positions.push_back(translationChild[1]);
-		//	Positions.push_back(translationChild[2]);
-		//	Positions.push_back(1.0f);
-
-		//	LoadBone(pNode->GetChild(i));
-		//	//me, child, call func on child
-		//}
 	}
 
 
@@ -208,7 +212,8 @@ namespace FBXinteracts {
 				if (root == nullptr)
 				{
 					root = pNode;
-					LoadBone(pNode);
+					
+					LoadBone(pNode, pNode->LclTranslation.Get());
 				}
 
 
@@ -246,7 +251,7 @@ namespace FBXinteracts {
 	void Functions::SetupFBX() 
 	{
 		//// Change the following filename to a suitable filename value.
-		const char* lFilename = "Idle.fbx";
+		const char* lFilename = "Teddy_Idle.fbx";
 
 		//// Initialize the SDK manager. This object handles memory management.
 		FbxManager* lSdkManager = FbxManager::Create();

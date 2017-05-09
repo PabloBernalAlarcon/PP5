@@ -77,12 +77,12 @@ public:
 	ID3D11Buffer* GridBuffer = nullptr;
 	ID3D11Buffer* lineBufferz = nullptr;
 
-	POINT OldMousePos;
-	POINT NewMousePos;
+	POINT MousePos;
+	//POINT NewMousePos;
 
 	HWND wind;
 
-	void Start(HWND window, std::vector<float> _Position, std::vector<float> _Bones);
+	void Start(HWND window, std::vector<float>& _Position, std::vector<float>& _Bones);
 	void Render();
 	void SetUpShadersForACoolTriangle();
 	void BufferUpTheTriangle();
