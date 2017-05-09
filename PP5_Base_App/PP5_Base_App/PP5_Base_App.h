@@ -6,4 +6,3 @@ struct vert {
 
 	float Position[4];
 };
-

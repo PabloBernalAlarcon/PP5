@@ -36,16 +36,17 @@ DirectXVault::~DirectXVault()
 }
 
 
-void DirectXVault::Start(HWND window, std::vector<float> _Position) {
+void DirectXVault::Start(HWND window, std::vector<float> _Position, std::vector<float> _Bones) {
 
 	wind = window;
 
+	Positions = _Position;
+	Bones = _Bones;
 	UINT leDeviceFlags = 0;
 #ifdef _DEBUG
 	leDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	Positions = _Position;
 	D3D_FEATURE_LEVEL leFeatureArray[] = {
 		D3D_FEATURE_LEVEL_10_0,
 		D3D_FEATURE_LEVEL_10_1,
@@ -325,6 +326,8 @@ void DirectXVault::BufferUpTheLines() {
 		OurVertices2.push_back(OurVerticesx[i*3 +0]);
 	}
 
+
+
 	sizetodraw = OurVertices2.size();
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -340,10 +343,46 @@ void DirectXVault::BufferUpTheLines() {
 	SUBRESx.SysMemSlicePitch = 0;
 
 	attribute.device->CreateBuffer(&bd, &SUBRESx, &lineBufferx);       // create the buffer
+      // create the buffer
 
+
+
+	std::vector<vertex> BonesVerts;
+
+	for (int i = 0; i < Bones.size(); i += 4)
+	{
+		vertex v;
+		v.Position.x = Positions[i];
+		v.Position.y = Positions[i + 1];
+		v.Position.z = Positions[i + 2];
+		v.Position.w = 1.0f; //Positions[i + 3];
+
+		v.Color = { 1.0f,1.0f,1.0f,1.0f };
+		BonesVerts.push_back(v);
+
+	}
+
+	sizetodrawBones = BonesVerts.size();
+
+	D3D11_BUFFER_DESC bd2;
+	ZeroMemory(&bd2, sizeof(bd2));
+
+	bd2.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
+	bd2.ByteWidth = sizeof(vertex) * BonesVerts.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
+	bd2.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
+	bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
+
+	D3D11_SUBRESOURCE_DATA SUBRESy;
+	SUBRESy.pSysMem = BonesVerts.data();
+	SUBRESy.SysMemPitch = 0;
+	SUBRESy.SysMemSlicePitch = 0;
+
+	attribute.device->CreateBuffer(&bd2, &SUBRESy, &lineBuffery);       // create the buffer
 
 	CD3D11_BUFFER_DESC bdm(sizeof(leMatrix),D3D11_BIND_CONSTANT_BUFFER);
 	attribute.device->CreateBuffer(&bdm,NULL,&matBuffer);
+
+
 
 	
 }
@@ -368,6 +407,7 @@ void DirectXVault::DrawTheCoolestTriangle() {
 
 void DirectXVault::DrawTheCoolestLines() {
 	
+	////body////
 	attribute.device_context->PSSetShader(pipelineState.pixel_shader, NULL, 0);
 	attribute.device_context->VSSetShader(pipelineState.vertex_shader, NULL, 0);
 	//// select which vertex buffer to display
@@ -378,6 +418,18 @@ void DirectXVault::DrawTheCoolestLines() {
 	//// draw the vertex buffer to the back buffer
 	attribute.device_context->IASetVertexBuffers(0, 1, &lineBufferx, &stride, &offset);
 	attribute.device_context->Draw(sizetodraw, 0);
+
+	///// bones /////
+	attribute.device_context->PSSetShader(pipelineState.pixel_shader, NULL, 0);
+	attribute.device_context->VSSetShader(pipelineState.vertex_shader, NULL, 0);
+	//// select which vertex buffer to display
+	stride = sizeof(vertex);
+	offset = 0;
+	//// select which primtive type we are using
+	attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	//// draw the vertex buffer to the back buffer
+	attribute.device_context->IASetVertexBuffers(0, 1, &lineBuffery, &stride, &offset);
+	attribute.device_context->Draw(sizetodrawBones, 0);
 
 
 }
@@ -438,9 +490,9 @@ void DirectXVault::RandomizeStuff() {
 
 
 void DirectXVault::SetMousePos() {
-	/*OldMousePos = NewMousePos;
+	OldMousePos = NewMousePos;
 	GetCursorPos(&NewMousePos);
-	ScreenToClient(wind, &NewMousePos);*/
+	ScreenToClient(wind, &NewMousePos);
 }
 void DirectXVault::UpdateCamera() {
 
@@ -503,7 +555,7 @@ void DirectXVault::UpdateCamera() {
 
 	
 		
-		OldMousePos = NewMousePos;
+		//OldMousePos = NewMousePos;
 
 
 
@@ -559,36 +611,38 @@ void DirectXVault::UpdateCamera() {
 		XMStoreFloat4x4(&matrix.translation, Result);
 	}*/
 
-	/*if (RMouseClick)
+	if (RMouseClick)
 	{
 		float dx = NewMousePos.x - OldMousePos.x;
 		float dy = NewMousePos.y - OldMousePos.y;
 
-		XMFLOAT4 Pos = XMFLOAT4(Camera._41, Camera._42, Camera._43, Camera._44);
+		XMFLOAT4 Pos = XMFLOAT4(matrix.translation._41, matrix.translation._42, matrix.translation._43, matrix.translation._44);
 
-		Camera._41 = 0.0f;
-		Camera._42 = 0.0f;
-		Camera._43 = 0.0f;
+		matrix.translation._41 = 0.0f;
+		matrix.translation._42 = 0.0f;
+		matrix.translation._43 = 0.0f;
 
 		XMMATRIX RotationX = XMMatrixRotationX(dy * 0.01f);
 		XMMATRIX RotationY = XMMatrixRotationY(dx * 0.01f);
 
-		XMMATRIX Temp = XMLoadFloat4x4(&Camera);
+		XMMATRIX Temp = XMLoadFloat4x4(&matrix.translation);
 		Temp = XMMatrixMultiply(RotationX, Temp);
 		Temp = XMMatrixMultiply(Temp, RotationY);
 
-		XMStoreFloat4x4(&Camera, Temp);
+		XMStoreFloat4x4(&matrix.translation, Temp);
 
-		Camera._41 = Pos.x;
-		Camera._42 = Pos.y;
-		Camera._43 = Pos.z;
+		matrix.translation._41 = Pos.x;
+		matrix.translation._42 = Pos.y;
+		matrix.translation._43 = Pos.z;
 
 		SetMousePos();
-	}*/
+	}
 
 }
 
-
+void DirectXVault::KeyPressed(bool ispressed) {
+	RMouseClick = ispressed;
+}
 void DirectXVault::transPose4X4(XMFLOAT4X4 & conv) {
 
 
@@ -600,4 +654,12 @@ void DirectXVault::transPose4X4(XMFLOAT4X4 & conv) {
 	conv._41 = temp._14; conv._42 = temp._24; conv._43 = temp._34; conv._44 = temp._44;
 
 
+}
+
+POINT DirectXVault::getCurrMousePos() {
+	return NewMousePos;
+}
+
+void DirectXVault::setCurrMouse(POINT p) {
+	 OldMousePos = p;
 }

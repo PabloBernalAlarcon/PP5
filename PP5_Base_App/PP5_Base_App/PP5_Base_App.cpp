@@ -10,7 +10,7 @@
 // Global Variables:
 HINSTANCE hInst;    
 FBXinteracts::Functions yee;
-std::vector<float> MeshPositions;
+std::vector<float> Bones;
 std::vector<float> vertices;
 // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
@@ -55,7 +55,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	freopen_s(&new_std_in_out, "CONIN$", "r", stdin);
 	std::cout << "Hello world!\n";
 	yee.SetupFBX();
-	MeshPositions = yee.getPositions();
+	//MeshPositions = yee.getPositions();
+	for (int i = 0; i < yee.getPositionsSize(); i++)
+	{
+		Bones.push_back(yee.getPositions(i));
+	}
 	for (int i = 0; i < yee.getvertsSize(); i++)
 	{
 		for (int j = 0; j <= 3; j++)
@@ -63,7 +67,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			vertices.push_back(yee.getverts(i, j));
 		}
 	}
-	DXVault.Start(hWnd,vertices);
+	DXVault.Start(hWnd,vertices, Bones);
 	//std::cout << yee.GimmeSomething();
 	
 #endif
@@ -80,6 +84,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+
+
 		DXVault.Render();
     }
 	//Add the following code immediately before the final return in the wWinMain function:
@@ -157,6 +163,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - post a quit message and return
 //
 //
+void SetNewClick() {
+	GetCursorPos(&DXVault.getCurrMousePos());
+	ScreenToClient(hWnd, &DXVault.getCurrMousePos());
+	DXVault.setCurrMouse(DXVault.getCurrMousePos());
+}
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -186,6 +197,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     //        EndPaint(hWnd, &ps);
     //    }
     //    break;
+	case WM_RBUTTONDOWN:
+		DXVault.KeyPressed(true);
+		SetNewClick();
+		break;
+	case WM_RBUTTONUP:
+		DXVault.KeyPressed(false);
+		break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

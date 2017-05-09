@@ -33,11 +33,14 @@ namespace FBXinteracts
 
 		static FBXINTERACTION_API void SetupFBX();
 
-		static FBXINTERACTION_API  vector<float> getPositions();
 
 		static FBXINTERACTION_API float getverts(unsigned int indicesVec, unsigned int indicesArr);
 
 		static FBXINTERACTION_API unsigned int getvertsSize();
+
+		static FBXINTERACTION_API unsigned int getPositionsSize();
+
+		static FBXINTERACTION_API float getPositions(unsigned int indicesVec);
 
 	};
 }

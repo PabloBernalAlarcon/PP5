@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include "FBXInteraction.h"
+#include <queue>
 using namespace fbxsdk;
 
 namespace FBXinteracts {
 
+	FbxNode * root;
+	FbxScene* lScene;
 	int Functions::GimmeSomething() 
 	{
 		 
@@ -64,10 +67,91 @@ namespace FBXinteracts {
 		// Note: to retrieve the character array of a FbxString, use its Buffer() method.
 		printf("<attribute type='%s' name='%s'/>\n", typeName.Buffer(), attrName.Buffer());
 	}
+	FbxPose * BindPose;
+	struct my_fbx_joint { FbxNode* node; int parent_index; };
+
+	void LoadBone(FbxNode * pNode) {
+
+
+		for (int i = 0; i < lScene->GetPoseCount(); i++)
+		{
+			if (lScene->GetPose(i)->IsBindPose())
+			{
+				BindPose = lScene->GetPose(i);
+				break;
+			}
+		}
+		
+		for (int i = 0; i < BindPose->GetCount(); i++)
+		{
+			FbxSkeleton * skelet = BindPose->GetNode(i)->GetSkeleton();
+			if (skelet != nullptr)
+			{
+				if (skelet->IsSkeletonRoot())
+				{
+					pNode = BindPose->GetNode(i);
+					break;
+				}
+			}
+		}
+
+		std::vector<my_fbx_joint> joints;
+		std::queue<my_fbx_joint> nodes;
+		my_fbx_joint temp;
+		temp.parent_index = -1;
+		temp.node = pNode;
+		nodes.push(temp);
+
+		while (!nodes.empty())
+		{
+			my_fbx_joint curr = nodes.front();
+			nodes.pop();
+			joints.push_back(curr);
+
+			for (int i = 0; i < curr.node->GetChildCount(); i++)
+			{
+				my_fbx_joint temp2;
+				temp2.node = curr.node->GetChild(i);
+				temp2.parent_index = joints.size() - 1;
+				nodes.push(temp2);
+			}
+		}
+
+		for (int i = 0; i < joints.size(); i++)
+		{
+			FbxDouble3 translation = joints[i].node->LclTranslation.Get();
+			Positions.push_back(translation[0]);
+			Positions.push_back(translation[1]);
+			Positions.push_back(translation[2]);
+			Positions.push_back(1.0f);
+
+		}
+		//for (int i = 0; i < pNode->GetChildCount(); i++)
+		//{
+		//	FbxDouble3 translation = pNode->LclTranslation.Get();
+		//	FbxDouble3 translationChild = pNode->GetChild(i)->LclTranslation.Get();
+		//	Positions.push_back(translation[0]);
+		//	Positions.push_back(translation[1]);
+		//	Positions.push_back(translation[2]);
+		//	Positions.push_back(1.0f);
+
+		//	Positions.push_back(translationChild[0]);
+		//	Positions.push_back(translationChild[1]);
+		//	Positions.push_back(translationChild[2]);
+		//	Positions.push_back(1.0f);
+
+		//	LoadBone(pNode->GetChild(i));
+		//	//me, child, call func on child
+		//}
+	}
+
+
 
 	void LoadNode(FbxNode * pNode) {
-
+		
 		FbxMesh * leMesh = pNode->GetMesh();
+	
+		
 		for (int i = 0; i < leMesh->GetPolygonCount(); i++)
 		{
 		
@@ -94,25 +178,39 @@ namespace FBXinteracts {
 	* Print a node, its attributes, and all its children recursively.
 	*/
 	void /*Functions::*/PrintNode(FbxNode* pNode) {
+
+		
 		PrintTabs();
 		const char* nodeName = pNode->GetName();
 		const char* attribute = pNode->GetNodeAttribute()->GetTypeName();
-		const char* data = "LimbNode";
+		const char* data = "skeleton";
 		FbxDouble3 translation = pNode->LclTranslation.Get();
 		FbxDouble3 rotation = pNode->LclRotation.Get();
 		FbxDouble3 scaling = pNode->LclScaling.Get();
 		FbxString att = GetAttributeTypeName(pNode->GetNodeAttribute()->GetAttributeType());
 		/*if (Positions.size() == 0)
 		{*/
-			if (attribute[0] == data[0] && attribute[2] == data[2])
+		printf("fjkj %s \n", att);
+			if (att == "skeleton")
 			{
-				for (size_t i = 0; i < pNode->GetChildCount(); i++)
-				{
-					FbxDouble3 translationChild = pNode->GetChild(i)->LclTranslation.Get();
+				printf("<node name='%s' node att='%s' translation='(%f, %f, %f)' rotation='(%f, %f, %f)' scaling='(%f, %f, %f)'>\n",
+					nodeName, attribute,
+					translation[0], translation[1], translation[2],
+					rotation[0], rotation[1], rotation[2],
+					scaling[0], scaling[1], scaling[2]
+				);
+				
+					/*FbxDouble3 translationChild = pNode->LclTranslation.Get();
 					Positions.push_back(translationChild[0]);
 					Positions.push_back(translationChild[1]);
 					Positions.push_back(translationChild[2]);
+					Positions.push_back(1.0f);*/
+				if (root == nullptr)
+				{
+					root = pNode;
+					LoadBone(pNode);
 				}
+
 
 			}
 
@@ -122,15 +220,14 @@ namespace FBXinteracts {
 			{
 				// Print the contents of the node.
 				LoadNode(pNode);
-				printf("<node name='%s' node att='%s' translation='(%f, %f, %f)' rotation='(%f, %f, %f)' scaling='(%f, %f, %f)'>\n",
-					nodeName, attribute,
-					translation[0], translation[1], translation[2],
-					rotation[0], rotation[1], rotation[2],
-					scaling[0], scaling[1], scaling[2]
-				);
+				
+					printf("<node name='%s' node att='%s' translation='(%f, %f, %f)' rotation='(%f, %f, %f)' scaling='(%f, %f, %f)'>\n",
+						nodeName, attribute,
+						translation[0], translation[1], translation[2],
+						rotation[0], rotation[1], rotation[2],
+						scaling[0], scaling[1], scaling[2]
+					);
 			}
-
-
 		
 		numTabs++;
 
@@ -169,7 +266,7 @@ namespace FBXinteracts {
 		}
 
 		//Create a new scene so that it can be populated by the imported file.
-		FbxScene* lScene = FbxScene::Create(lSdkManager, "myScene");
+		lScene = FbxScene::Create(lSdkManager, "myScene");
 
 		// Import the contents of the file into the scene.
 		lImporter->Import(lScene);
@@ -190,8 +287,12 @@ namespace FBXinteracts {
 		lSdkManager->Destroy();
 	}
 
-	vector<float> Functions::getPositions() {
-		return Positions;
+	float Functions::getPositions(unsigned int indicesVec) {
+		return Positions[indicesVec];
+	}
+
+	unsigned int Functions::getPositionsSize() {
+		return Positions.size();
 	}
 
 	float Functions::getverts(unsigned int indicesVec, unsigned int indicesArr ) {

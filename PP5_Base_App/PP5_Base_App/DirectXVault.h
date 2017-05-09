@@ -11,12 +11,13 @@
 class DirectXVault
 {
 public:
+
 	DirectXVault();
 	~DirectXVault();
 	
 	
 
-	int sizetodraw;
+
 	struct pipeline_state_t
 	{
 		ID3D11InputLayout *input_layout = nullptr;
@@ -57,10 +58,12 @@ public:
 
 
 	std::vector<float> Positions;
-
+	std::vector<float> Bones;
+	int sizetodraw;
+	int sizetodrawBones;
 	pipeline_state_t pipelineState;
 	Attributes attribute;
-
+	bool RMouseClick = false;
 	/*Attributes attributeline;
 	pipeline_state_t linesState;*/
 
@@ -70,15 +73,16 @@ public:
 	
 
 	ID3D11Buffer* lineBufferx = nullptr;
+	ID3D11Buffer* lineBuffery = nullptr;
 	ID3D11Buffer* GridBuffer = nullptr;
 	ID3D11Buffer* lineBufferz = nullptr;
 
 	POINT OldMousePos;
 	POINT NewMousePos;
-	bool RMouseClick = false;
+
 	HWND wind;
 
-	void Start(HWND window, std::vector<float> _Position);
+	void Start(HWND window, std::vector<float> _Position, std::vector<float> _Bones);
 	void Render();
 	void SetUpShadersForACoolTriangle();
 	void BufferUpTheTriangle();
@@ -92,5 +96,8 @@ public:
 	void SetMousePos();
 	void UpdateCamera();
 	void transPose4X4(DirectX::XMFLOAT4X4 & conv);
+	void KeyPressed(bool didtheyPress);
+	POINT getCurrMousePos();
+	void setCurrMouse(POINT p);
 };
 
