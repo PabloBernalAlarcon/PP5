@@ -138,8 +138,8 @@ void DirectXVault::Render() {
 
 
 	XMStoreFloat4x4(&copy.view , XMMatrixInverse(nullptr, XMLoadFloat4x4(&copy.view)));
-
-
+	
+	XMStoreFloat4x4(&copy.view, XMMatrixTranspose(XMMatrixInverse(nullptr,  XMLoadFloat4x4(&cam))));
 	transPose4X4(copy.view);
 	transPose4X4(copy.translation);
 	transPose4X4(copy.projection);
@@ -455,12 +455,12 @@ void DirectXVault::GimmeACamera() {
 	DirectX::XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
 	DirectX::XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
 
-	//XMStoreFloat4x4(&matrix.view, XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up)));
-
+	XMStoreFloat4x4(&cam, XMMatrixInverse(nullptr,XMMatrixLookAtLH(eye, at, up)));
+	XMStoreFloat4x4(&matrix.view, XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up)));
 	float aspectRatio = WIDTH / HEIGHT;
 	float fovAngleY = 70.0f * 3.14f / 180.0f;
 
-	DirectX::XMMATRIX projj = DirectX::XMMatrixPerspectiveFovLH(fovAngleY,aspectRatio,0.01f,100.0f);
+	DirectX::XMMATRIX projj = DirectX::XMMatrixPerspectiveFovLH(fovAngleY,aspectRatio,0.01f,1000.0f);
 	XMStoreFloat4x4(&matrix.projection, projj);
 	
 	//XMStoreFloat4x4(&matrix.translation, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye, at, up)));
@@ -503,6 +503,9 @@ void DirectXVault::SetMousePos() {
 	SetCursorPos(p.x, p.y);
 }
 void DirectXVault::UpdateCamera() {
+
+	GetCursorPos(&currPoint);
+
 
 	if ( GetAsyncKeyState('W'))
 	{
@@ -618,40 +621,41 @@ void DirectXVault::UpdateCamera() {
 		XMMATRIX Result = XMMatrixMultiply(Translation, Temp);
 		XMStoreFloat4x4(&matrix.translation, Result);
 	}*/
-
-		//GetKeyState(VK_RBUTTON)<0
+	/*POINT pos;
+	GetCursorPos(&pos);*/
 	if (GetKeyState(VK_RBUTTON)<0)
 	{
-		POINT pos;
-		GetCursorPos(&pos);
-		ScreenToClient(wind, &pos);
-		MousePos = pos;
-		float dx = (float)(MousePos.x - WIDTH/2 )/WIDTH;
-		float dy = (float)(MousePos.y - HEIGHT/2)/HEIGHT;
+
+		//ScreenToClient(wind, &pos);
+		//MousePos = pos;
+		float dx = (float)(currPoint.x - prevPoint.x);
+		float dy = (float)(currPoint.y - prevPoint.y);
 
 		printf("%f, %f\n", dx, dy);
 
-		XMFLOAT4 Pos = XMFLOAT4(matrix.translation._41, matrix.translation._42, matrix.translation._43, matrix.translation._44);
+		XMFLOAT4 Pos = XMFLOAT4(cam._41, cam._42, cam._43, cam._44);
 
-		matrix.translation._41 = 0.0f;
-		matrix.translation._42 = 0.0f;
-		matrix.translation._43 = 0.0f;
+		cam._41 = 0.0f;
+		cam._42 = 0.0f;
+		cam._43 = 0.0f;
 
-		XMMATRIX RotationX = XMMatrixRotationX(dy);
-		XMMATRIX RotationY = XMMatrixRotationY(dx);
+		XMMATRIX RotationX = XMMatrixRotationX(dy*0.05f);
+		XMMATRIX RotationY = XMMatrixRotationY(dx*0.05f);
 
-		XMMATRIX Temp = XMLoadFloat4x4(&matrix.translation);
+		XMMATRIX Temp = XMLoadFloat4x4(&cam);
 		Temp = XMMatrixMultiply(RotationX, Temp);
 		Temp = XMMatrixMultiply(Temp, RotationY);
 
-		XMStoreFloat4x4(&matrix.translation, Temp);
+		XMStoreFloat4x4(&cam, Temp);
 
-		matrix.translation._41 = Pos.x;
-		matrix.translation._42 = Pos.y;
-		matrix.translation._43 = Pos.z;
+		cam._41 = Pos.x;
+		cam._42 = Pos.y;
+		cam._43 = Pos.z;
 
-		SetMousePos();
+		//SetMousePos();
 	}
+
+	prevPoint = currPoint;
 
 }
 

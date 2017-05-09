@@ -72,60 +72,6 @@ namespace FBXinteracts {
 
 	void LoadBone(FbxNode * pNode, FbxDouble3 StoredP) {
 
-
-	/*	for (int i = 0; i < lScene->GetPoseCount(); i++)
-		{
-			if (lScene->GetPose(i)->IsBindPose())
-			{
-				BindPose = lScene->GetPose(i);
-				break;
-			}
-		}
-		
-		for (int i = 0; i < BindPose->GetCount(); i++)
-		{
-			FbxSkeleton * skelet = BindPose->GetNode(i)->GetSkeleton();
-			if (skelet != nullptr)
-			{
-				if (skelet->IsSkeletonRoot())
-				{
-					pNode = BindPose->GetNode(i);
-					break;
-				}
-			}
-		}
-
-		std::vector<my_fbx_joint> joints;
-		std::queue<my_fbx_joint> nodes;
-		my_fbx_joint temp;
-		temp.parent_index = -1;
-		temp.node = pNode;
-		nodes.push(temp);
-
-		while (!nodes.empty())
-		{
-			my_fbx_joint curr = nodes.front();
-			nodes.pop();
-			joints.push_back(curr);
-
-			for (int i = 0; i < curr.node->GetChildCount(); i++)
-			{
-				my_fbx_joint temp2;
-				temp2.node = curr.node->GetChild(i);
-				temp2.parent_index = joints.size() - 1;
-				nodes.push(temp2);
-			}
-		}
-
-		for (int i = 0; i < joints.size(); i++)
-		{
-			FbxDouble3 translation = joints[i].node->LclTranslation.Get();
-			Positions.push_back(translation[0]);
-			Positions.push_back(translation[1]);
-			Positions.push_back(translation[2]);
-			Positions.push_back(1.0f);
-
-		}*/
 		for (int i = 0; i < pNode->GetChildCount(); i++)
 		{
 			//FbxDouble3 translation = pNode->LclTranslation.Get();

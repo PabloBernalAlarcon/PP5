@@ -70,7 +70,10 @@ public:
 	leMatrix matrix;
 	ID3D11Buffer* matBuffer = nullptr;
 	
-	
+	DirectX::XMFLOAT4X4 cam;
+
+	POINT currPoint;
+	POINT prevPoint;
 
 	ID3D11Buffer* lineBufferx = nullptr;
 	ID3D11Buffer* lineBuffery = nullptr;
