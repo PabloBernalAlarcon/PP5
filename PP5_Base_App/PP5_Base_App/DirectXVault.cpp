@@ -36,12 +36,12 @@ DirectXVault::~DirectXVault()
 }
 
 
-void DirectXVault::Start(HWND window, std::vector<float>& _Position, std::vector<float>& _Bones) {
+void DirectXVault::Start(HWND window, std::vector<float>& _Position/*, std::vector<float>& _Bones*/) {
 
 	wind = window;
 
 	Positions = _Position;
-	Bones = _Bones;
+	//Bones = _Bones;
 	UINT leDeviceFlags = 0;
 #ifdef _DEBUG
 	leDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -91,6 +91,16 @@ void DirectXVault::Start(HWND window, std::vector<float>& _Position, std::vector
 
 	attribute.device_context->RSSetViewports(1, &attribute.viewport);
 	
+	D3D11_RASTERIZER_DESC desc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT());
+	desc.FillMode = D3D11_FILL_SOLID;
+	desc.CullMode = D3D11_CULL_BACK;
+	attribute.device->CreateRasterizerState(&desc, &pipelineState.rasterState);
+	desc.FillMode = D3D11_FILL_WIREFRAME;
+	desc.CullMode = D3D11_CULL_NONE;
+	attribute.device->CreateRasterizerState(&desc, &pipelineState.debugRasterState);
+
+	debugattribute = attribute;
+
 	SetUpShadersForACoolTriangle();
 	BufferUpTheTriangle();
 	BufferUpTheLines();
@@ -147,9 +157,14 @@ void DirectXVault::Render() {
 	attribute.device_context->UpdateSubresource(matBuffer, 0, NULL, &copy, 0, 0);
 	attribute.device_context->VSSetConstantBuffers(0, 1, &matBuffer);
 
+	debugattribute.device_context->UpdateSubresource(matBuffer, 0, NULL, &copy, 0, 0);
+	debugattribute.device_context->VSSetConstantBuffers(0, 1, &matBuffer);
 //	attribute.device_context->ClearDepthStencilView(pipelineState.depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	attribute.device_context->ClearRenderTargetView(attribute.render_target, DirectX::Colors::SeaGreen);
 	attribute.device_context->IASetInputLayout(pipelineState.input_layout);
+
+	//debugattribute.device_context->ClearRenderTargetView(debugattribute.render_target, DirectX::Colors::SeaGreen);
+	debugattribute.device_context->IASetInputLayout(debugpipelineState.input_layout);
 
 	DrawTheCoolestTriangle();
 	DrawTheCoolestGrid();
@@ -161,6 +176,9 @@ void DirectXVault::SetUpShadersForACoolTriangle() {
 	
 	attribute.device->CreatePixelShader(trivial_PS, sizeof(trivial_PS), NULL, &pipelineState.pixel_shader);
 	attribute.device->CreateVertexShader(trivial_VS, sizeof(trivial_VS), NULL, &pipelineState.vertex_shader);
+
+	debugattribute.device->CreatePixelShader(trivial_PS, sizeof(trivial_PS), NULL, &debugpipelineState.pixel_shader);
+	debugattribute.device->CreateVertexShader(trivial_VS, sizeof(trivial_VS), NULL, &debugpipelineState.vertex_shader);
 	D3D11_INPUT_ELEMENT_DESC ied[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -169,7 +187,7 @@ void DirectXVault::SetUpShadersForACoolTriangle() {
 
 
 	attribute.device->CreateInputLayout(ied,2,trivial_VS,sizeof(trivial_VS),&pipelineState.input_layout);
-
+	debugattribute.device->CreateInputLayout(ied, 2, trivial_VS, sizeof(trivial_VS), &debugpipelineState.input_layout);
 
 
 }
@@ -316,7 +334,7 @@ void DirectXVault::BufferUpTheLines() {
 
 	}
 
-	for (int i = 0; i < OurVerticesx.size() / 3; i++)
+	/*for (int i = 0; i < OurVerticesx.size() / 3; i++)
 	{
 		OurVertices2.push_back(OurVerticesx[i*3 +0]);
 		OurVertices2.push_back(OurVerticesx[i*3 +1]);
@@ -325,20 +343,20 @@ void DirectXVault::BufferUpTheLines() {
 		OurVertices2.push_back(OurVerticesx[i*3 +2]);
 		OurVertices2.push_back(OurVerticesx[i*3 +0]);
 	}
+*/
 
 
-
-	sizetodraw = OurVertices2.size();
+	sizetodraw = OurVerticesx.size();
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
-	bd.ByteWidth = sizeof(vertex) * OurVertices2.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
+	bd.ByteWidth = sizeof(vertex) * OurVerticesx.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
 
 	D3D11_SUBRESOURCE_DATA SUBRESx;
-	SUBRESx.pSysMem = OurVertices2.data();
+	SUBRESx.pSysMem = OurVerticesx.data();
 	SUBRESx.SysMemPitch = 0;
 	SUBRESx.SysMemSlicePitch = 0;
 
@@ -346,7 +364,52 @@ void DirectXVault::BufferUpTheLines() {
       // create the buffer
 
 
+	////bones
+	//std::vector<vertex> BonesVerts;
 
+	//for (int i = 0; i < Bones.size(); i += 4)
+	//{
+	//	vertex v;
+	//	v.Position.x = Bones[i];
+	//	v.Position.y = Bones[i + 1];
+	//	v.Position.z = Bones[i + 2];
+	//	v.Position.w = 1.0f; //Positions[i + 3];
+
+	//	v.Color = { 1.0f,1.0f,1.0f,1.0f };
+	//	BonesVerts.push_back(v);
+
+	//}
+
+	//sizetodrawBones = BonesVerts.size();
+
+	//D3D11_BUFFER_DESC bd2;
+	//ZeroMemory(&bd2, sizeof(bd2));
+
+	//bd2.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
+	//bd2.ByteWidth = sizeof(vertex) * BonesVerts.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
+	//bd2.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
+	//bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
+
+	//debugattribute.device->CreateBuffer(&bd2, NULL, &lineBuffery);       // create the buffer
+	//
+	////D3D11_SUBRESOURCE_DATA SUBRESy;
+	////SUBRESy.pSysMem = BonesVerts.data();
+	////SUBRESy.SysMemPitch = 0;
+	////SUBRESy.SysMemSlicePitch = 0;
+
+	//D3D11_MAPPED_SUBRESOURCE ms;
+	//debugattribute.device_context->Map(lineBuffery, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
+	//memcpy(ms.pData, BonesVerts.data(), BonesVerts.size()*sizeof(vertex));                 // copy the data
+	//debugattribute.device_context->Unmap(lineBuffery, NULL);
+
+	//CD3D11_BUFFER_DESC bdm(sizeof(leMatrix), D3D11_BIND_CONSTANT_BUFFER);
+	//debugattribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
+}
+
+void DirectXVault::bufferdemBones(std::vector<float>& _Bones) {
+	//bones
+	Bones.clear();
+	Bones = _Bones;
 	std::vector<vertex> BonesVerts;
 
 	for (int i = 0; i < Bones.size(); i += 4)
@@ -372,19 +435,20 @@ void DirectXVault::BufferUpTheLines() {
 	bd2.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
 	bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
 
-	D3D11_SUBRESOURCE_DATA SUBRESy;
-	SUBRESy.pSysMem = BonesVerts.data();
-	SUBRESy.SysMemPitch = 0;
-	SUBRESy.SysMemSlicePitch = 0;
+	debugattribute.device->CreateBuffer(&bd2, NULL, &lineBuffery);       // create the buffer
 
-	attribute.device->CreateBuffer(&bd2, &SUBRESy, &lineBuffery);       // create the buffer
+																		 //D3D11_SUBRESOURCE_DATA SUBRESy;
+																		 //SUBRESy.pSysMem = BonesVerts.data();
+																		 //SUBRESy.SysMemPitch = 0;
+																		 //SUBRESy.SysMemSlicePitch = 0;
 
-	CD3D11_BUFFER_DESC bdm(sizeof(leMatrix),D3D11_BIND_CONSTANT_BUFFER);
-	attribute.device->CreateBuffer(&bdm,NULL,&matBuffer);
+	D3D11_MAPPED_SUBRESOURCE ms;
+	debugattribute.device_context->Map(lineBuffery, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
+	memcpy(ms.pData, BonesVerts.data(), BonesVerts.size() * sizeof(vertex));                 // copy the data
+	debugattribute.device_context->Unmap(lineBuffery, NULL);
 
-
-
-	
+	CD3D11_BUFFER_DESC bdm(sizeof(leMatrix), D3D11_BIND_CONSTANT_BUFFER);
+	debugattribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
 }
 void DirectXVault::DrawTheCoolestTriangle() {
 
@@ -407,29 +471,42 @@ void DirectXVault::DrawTheCoolestTriangle() {
 
 void DirectXVault::DrawTheCoolestLines() {
 	
+	if (toggle) {
+		attribute.device_context->RSSetState(pipelineState.rasterState);
+	}
+	else
+		attribute.device_context->RSSetState(pipelineState.debugRasterState);
+
 	////body////
 	attribute.device_context->PSSetShader(pipelineState.pixel_shader, NULL, 0);
 	attribute.device_context->VSSetShader(pipelineState.vertex_shader, NULL, 0);
+
 	//// select which vertex buffer to display
 	UINT stride = sizeof(vertex);
 	UINT offset = 0;
 	//// select which primtive type we are using
-	attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//// draw the vertex buffer to the back buffer
 	attribute.device_context->IASetVertexBuffers(0, 1, &lineBufferx, &stride, &offset);
 	attribute.device_context->Draw(sizetodraw, 0);
 
-	///// bones /////
-	attribute.device_context->PSSetShader(pipelineState.pixel_shader, NULL, 0);
-	attribute.device_context->VSSetShader(pipelineState.vertex_shader, NULL, 0);
-	//// select which vertex buffer to display
-	stride = sizeof(vertex);
-	offset = 0;
-	//// select which primtive type we are using
-	attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	//// draw the vertex buffer to the back buffer
-	attribute.device_context->IASetVertexBuffers(0, 1, &lineBuffery, &stride, &offset);
-	attribute.device_context->Draw(sizetodrawBones, 0);
+	if (!toggle)
+	{
+		///// bones /////
+		debugattribute.device_context->PSSetShader(debugpipelineState.pixel_shader, NULL, 0);
+		debugattribute.device_context->VSSetShader(debugpipelineState.vertex_shader, NULL, 0);
+		//// select which vertex buffer to display
+		stride = sizeof(vertex);
+		offset = 0;
+		//// select which primtive type we are using
+		attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		//// draw the vertex buffer to the back buffer
+		attribute.device_context->IASetVertexBuffers(0, 1, &lineBuffery, &stride, &offset);
+		
+		attribute.device_context->Draw(sizetodrawBones, 0);
+	}
+	
+
 
 
 }
@@ -509,7 +586,7 @@ void DirectXVault::UpdateCamera() {
 
 	if ( GetAsyncKeyState('W'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, -0.05f);
+		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, -0.5f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
@@ -519,7 +596,7 @@ void DirectXVault::UpdateCamera() {
 	}
 	if (GetAsyncKeyState('S'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, 0.05f);
+		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, 0.5f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
@@ -527,7 +604,7 @@ void DirectXVault::UpdateCamera() {
 	}
 	if (GetAsyncKeyState('A'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.05f, 0.0f, 0.0f);
+		XMMATRIX translation = XMMatrixTranslation(0.5f, 0.0f, 0.0f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
@@ -536,7 +613,7 @@ void DirectXVault::UpdateCamera() {
 	}
 	if (GetAsyncKeyState('D'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(-0.05f, 0.0f, 0.0f);
+		XMMATRIX translation = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
@@ -545,7 +622,7 @@ void DirectXVault::UpdateCamera() {
 	}
 	if (GetAsyncKeyState('X'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.05f, 0.0f);
+		XMMATRIX translation = XMMatrixTranslation(0.0f, 0.5f, 0.0f);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
@@ -556,7 +633,7 @@ void DirectXVault::UpdateCamera() {
 
 	if (GetAsyncKeyState('B'))
 	{
-		XMMATRIX translation = XMMatrixTranslation(0.0f, -0.05f, 0.0f * 10);
+		XMMATRIX translation = XMMatrixTranslation(0.0f, -0.5f, 0.0f * 10);
 		XMMATRIX temp_camera = XMLoadFloat4x4(&matrix.translation);
 		XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 		XMStoreFloat4x4(&matrix.translation, result);
@@ -628,8 +705,8 @@ void DirectXVault::UpdateCamera() {
 
 		//ScreenToClient(wind, &pos);
 		//MousePos = pos;
-		float dx = (float)(currPoint.x - prevPoint.x);
-		float dy = (float)(currPoint.y - prevPoint.y);
+		float dx = (float)(currPoint.x - prevPoint.x) * 0.01f;
+		float dy = (float)(currPoint.y - prevPoint.y) * 0.01f;
 
 		printf("%f, %f\n", dx, dy);
 

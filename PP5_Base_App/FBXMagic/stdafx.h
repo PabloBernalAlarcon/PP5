@@ -12,5 +12,5 @@
 #include <windows.h>
 #include <fbxsdk.h>
 #include <vector>
-using namespace std;
+//using namespace std;
 // TODO: reference additional headers your program requires here

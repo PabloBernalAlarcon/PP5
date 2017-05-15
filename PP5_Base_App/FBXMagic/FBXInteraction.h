@@ -19,8 +19,20 @@ namespace FBXinteracts
 		float Position[4];
 	};
 
+	struct KeyFrame {
+
+		double time;
+		std::vector<vert> bones;
+	};
+
+	struct AnimClip{
+
+		double lenght;
+		std::vector<KeyFrame> keys;
+	};
 	
-	using namespace std;
+	AnimClip animation;
+	//using namespace std;
 	// This class is exported from the MathLibrary.dll  
 	class Functions
 	{
@@ -41,6 +53,8 @@ namespace FBXinteracts
 		static FBXINTERACTION_API unsigned int getPositionsSize();
 
 		static FBXINTERACTION_API float getPositions(unsigned int indicesVec);
+
+		static FBXINTERACTION_API AnimClip getAnimation() { return animation; }
 
 	};
 }

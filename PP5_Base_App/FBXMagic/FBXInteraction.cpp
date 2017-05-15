@@ -15,9 +15,9 @@ namespace FBXinteracts {
 
 	/* Tab character ("\t") counter */
 	int numTabs = 0;
-	vector<float> Positions;
-	vector<vert> becky;
-	vector<int> Indices;
+	std::vector<float> Positions;
+	std::vector<vert> becky;
+	std::vector<int> Indices;
 	/**
 	* Print the required number of tabs.
 	*/
@@ -70,27 +70,30 @@ namespace FBXinteracts {
 	FbxPose * BindPose;
 	struct my_fbx_joint { FbxNode* node; int parent_index; };
 
-	void LoadBone(FbxNode * pNode, FbxDouble3 StoredP) {
+	void LoadBone(FbxNode * pNode, FbxDouble3 StoredP, KeyFrame * currFrame, FbxTime duration) {
 
+		vert parent;
 		for (int i = 0; i < pNode->GetChildCount(); i++)
 		{
-			//FbxDouble3 translation = pNode->LclTranslation.Get();
-			FbxDouble3 translationChild = pNode->GetChild(i)->LclTranslation.Get();
-			Positions.push_back(StoredP[0]);
-			Positions.push_back(StoredP[1]);
-			Positions.push_back(StoredP[2]);
-			Positions.push_back(1.0f);
-
-			Positions.push_back(translationChild[0]+ StoredP[0]);
-			Positions.push_back(translationChild[1] + StoredP[1]);
-			Positions.push_back(translationChild[2] + StoredP[2]);
-			Positions.push_back(1.0f);
-
+			vert child;
+			//FbxDouble3 translationChild = pNode->GetChild(i)->LclTranslation.Get();
+			FbxDouble3 translationChild = pNode->GetChild(i)->EvaluateGlobalTransform(duration).GetT();
+			parent.Position[0] = StoredP[0];
+			parent.Position[1] = StoredP[1];
+			parent.Position[2] = StoredP[2];
+			parent.Position[3] = 1.0f;
+			
+			child.Position[0] = (translationChild[0] );
+			child.Position[1] = (translationChild[1]);
+			child.Position[2] = (translationChild[2]);
+			child.Position[3] = (1.0f);
+			currFrame->bones.push_back(parent);
+			currFrame->bones.push_back(child);
 			FbxDouble3 P;
-			P[0] = translationChild[0] + StoredP[0];
-			P[1] = translationChild[1] + StoredP[1];
-			P[2] = translationChild[2] + StoredP[2];
-			LoadBone(pNode->GetChild(i), P);
+			P[0] = translationChild[0];
+			P[1] = translationChild[1];
+			P[2] = translationChild[2];
+			LoadBone(pNode->GetChild(i), P,currFrame,duration);
 			//me, child, call func on child
 		}
 	}
@@ -158,8 +161,23 @@ namespace FBXinteracts {
 				if (root == nullptr)
 				{
 					root = pNode;
+					FbxAnimStack * Animstack = pNode->GetScene()->GetCurrentAnimationStack();
+					fbxsdk::FbxTimeSpan  TimeSpan = Animstack->GetLocalTimeSpan();
+					fbxsdk::FbxTime TimeDuration = TimeSpan.GetDuration();
+					animation.lenght = TimeDuration.GetSecondDouble();
+					FbxLongLong frameCount = TimeDuration.GetFrameCount(FbxTime::EMode::eFrames24);
+
+					for (int i = 1; i <= frameCount; i++)
+					{
+						KeyFrame currFrame;
+						TimeDuration.SetFrame(i, FbxTime::EMode::eFrames24);
+						currFrame.time = TimeDuration.GetSecondDouble();
+					LoadBone(pNode, pNode->EvaluateGlobalTransform(TimeDuration).GetT(),&currFrame,TimeDuration);
+					animation.keys.push_back(currFrame);
 					
-					LoadBone(pNode, pNode->LclTranslation.Get());
+					}
+
+
 				}
 
 
@@ -219,11 +237,17 @@ namespace FBXinteracts {
 		//Create a new scene so that it can be populated by the imported file.
 		lScene = FbxScene::Create(lSdkManager, "myScene");
 
+	
+
+
 		// Import the contents of the file into the scene.
 		lImporter->Import(lScene);
 
 		// The file is imported, so get rid of the importer.
 		lImporter->Destroy();
+
+	
+
 
 		// Print the nodes of the scene and their attributes recursively.
 		// Note that we are not printing the root node because it should

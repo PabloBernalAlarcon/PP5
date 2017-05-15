@@ -5,6 +5,8 @@
 #include "PP5_Base_App.h"
 #include <iostream>
 #include "DirectXVault.h"
+
+#include "FBXInteraction.h"
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -55,11 +57,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	freopen_s(&new_std_in_out, "CONIN$", "r", stdin);
 	std::cout << "Hello world!\n";
 	yee.SetupFBX();
-	//MeshPositions = yee.getPositions();
-	for (int i = 0; i < yee.getPositionsSize(); i++)
-	{
-		Bones.push_back(yee.getPositions(i));
-	}
+
 	for (int i = 0; i < yee.getvertsSize(); i++)
 	{
 		for (int j = 0; j <= 3; j++)
@@ -67,7 +65,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			vertices.push_back(yee.getverts(i, j));
 		}
 	}
-	DXVault.Start(hWnd,vertices, Bones);
+	DXVault.Start(hWnd,vertices/*, Bones*/);
 	//std::cout << yee.GimmeSomething();
 	
 #endif
@@ -75,7 +73,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_PP5_BASE_APP));
 
     MSG msg;
-
+	int key = 0;
+	std::vector<FBXinteracts::vert> jimmy;
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
@@ -85,8 +84,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             DispatchMessage(&msg);
         }
 
+		if (GetAsyncKeyState('Q') & 0x01)
+		{
+			DXVault.toggle = !DXVault.toggle;
+		}
+		jimmy.clear();
+		jimmy = yee.getAnimation().keys[key].bones;
+		//FBXinteracts::AnimClip somso = yee.getAnimation();
+		//yee.getAnim();
+		//MeshPositions = yee.getPositions();
+		Bones.clear();
+		for (int i = 0; i < jimmy.size(); i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				Bones.push_back(jimmy[i].Position[j]);
+			}
 
+		}
+		DXVault.bufferdemBones(Bones);
 		DXVault.Render();
+		
+		if (GetAsyncKeyState('E') & 0x01)
+		{
+			key++;
+		}
+		if (key >= 60)
+		{
+			key = 0;
+		}
     }
 	//Add the following code immediately before the final return in the wWinMain function:
 #ifndef NDEBUG
@@ -205,6 +231,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DXVault.KeyPressed(false);
 		break;
 		*/
+		
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

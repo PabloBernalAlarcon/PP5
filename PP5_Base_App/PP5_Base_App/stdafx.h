@@ -16,11 +16,10 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
-#include "FBXInteraction.h"
 
 // TODO: reference additional headers your program requires here
-#define WIDTH 500
-#define HEIGHT 500
+#define WIDTH 1500
+#define HEIGHT 1500
 
 #include "trivial_VS.csh"
 #include "trivial_PS.csh"

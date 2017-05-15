@@ -6,7 +6,7 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-
+#include <vector>
 
 class DirectXVault
 {
@@ -27,6 +27,7 @@ public:
 		ID3D11DepthStencilState *depthStencilState = nullptr;
 		ID3D11DepthStencilView *depthStencilView = nullptr;
 		ID3D11RasterizerState *rasterState = nullptr;
+		ID3D11RasterizerState * debugRasterState = nullptr;
 		ID3D11Buffer *indexbuffer = nullptr;
 		ID3D10Buffer *constantBuffer = nullptr;
 	}default_pipeline;
@@ -57,13 +58,18 @@ public:
 	};
 
 
+	ID3D11RasterizerState * mainRasterizer;
+	ID3D11RasterizerState * debugRasterizer;
 	std::vector<float> Positions;
 	std::vector<float> Bones;
 	int sizetodraw;
 	int sizetodrawBones;
 	pipeline_state_t pipelineState;
+	pipeline_state_t debugpipelineState;
 	Attributes attribute;
+	Attributes debugattribute;
 	bool RMouseClick = false;
+	bool toggle = false;
 	/*Attributes attributeline;
 	pipeline_state_t linesState;*/
 
@@ -85,11 +91,12 @@ public:
 
 	HWND wind;
 
-	void Start(HWND window, std::vector<float>& _Position, std::vector<float>& _Bones);
+	void Start(HWND window, std::vector<float>& _Position/*, std::vector<float>& _Bones*/);
 	void Render();
 	void SetUpShadersForACoolTriangle();
 	void BufferUpTheTriangle();
 	void BufferUpTheLines();
+	void bufferdemBones(std::vector<float>& _Bones);
 	void BufferUpTheGrid();
 	void DrawTheCoolestTriangle();
 	void DrawTheCoolestLines();
