@@ -5,7 +5,7 @@
 #include "PP5_Base_App.h"
 #include <iostream>
 #include "DirectXVault.h"
-
+#include <chrono>
 #include "FBXInteraction.h"
 #define MAX_LOADSTRING 100
 
@@ -75,41 +75,90 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
 	int key = 0;
 	std::vector<FBXinteracts::vert> jimmy;
+	bool stopYouCuck = false;
+	std::chrono::time_point<std::chrono::system_clock> notNow;
+	notNow = std::chrono::system_clock::now();
+	float totalTime = 0;
     // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
+    while (!stopYouCuck)
     {
+		totalTime += (std::chrono::system_clock::now() - notNow).count() / 10000000.0f;
+		notNow = std::chrono::system_clock::now();
+
+		while (PeekMessageA(&msg, nullptr, 0, 0,PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessageA(&msg);
+		}
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+			if (msg.message == WM_QUIT)
+			{
+				stopYouCuck = true;
+			}
         }
 
-		if (GetAsyncKeyState('Q') & 0x01)
+		if (GetAsyncKeyState('T') & 0x01)
 		{
 			DXVault.toggle = !DXVault.toggle;
 		}
-		jimmy.clear();
-		jimmy = yee.getAnimation().keys[key].bones;
+		/*jimmy.clear();
+		jimmy = yee.getAnimation().keys[key].bones;*/
+		float lastTime = yee.getAnimation().keys[yee.getAnimation().keys.size() - 1].time;
+		float mtime = fmod(totalTime, lastTime);
+		int frame = 1;
+		for (int i = 1; i <yee.getAnimation().keys.size() - 1; i++)
+		{
+			if (yee.getAnimation().keys[i].time > mtime)
+			{
+				frame = i;
+				break;
+			}
+		}
+		int prevFrame = frame - 1;
+		if (prevFrame == 0)
+		{
+			prevFrame = yee.getAnimation().keys.size() - 1;
+		}
+
+		float timeDiff = yee.getAnimation().keys[frame].time - yee.getAnimation().keys[prevFrame].time;
+		float timeIn = mtime - yee.getAnimation().keys[prevFrame].time;
+		float ratio = timeIn / timeDiff;
+		std::vector<FBXinteracts::vert> CurrJoints; // yee.getAnimation().keys[prevFrame].bones;
+		for (int i = 0; i < yee.getAnimation().keys[prevFrame].bones.size(); i++)
+		{
+			FBXinteracts::vert v1, v2,v3;
+			v1 = yee.getAnimation().keys[prevFrame].bones[i];
+			v2 = yee.getAnimation().keys[frame].bones[i];
+			v3.Position[0] = (v2.Position[0] - v1.Position[0])*ratio + v1.Position[0];
+			v3.Position[1] = (v2.Position[1] - v1.Position[1])*ratio + v1.Position[1];
+			v3.Position[2] = (v2.Position[2] - v1.Position[2])*ratio + v1.Position[2];
+			v3.Position[3] = 1.0f;
+
+			CurrJoints.push_back(v3);
+		}
 		//FBXinteracts::AnimClip somso = yee.getAnimation();
 		//yee.getAnim();
 		//MeshPositions = yee.getPositions();
 		Bones.clear();
-		for (int i = 0; i < jimmy.size(); i++)
+		for (int i = 0; i < /*jimmy.size()*/CurrJoints.size(); i++)
 		{
 			for (int j = 0; j < 4; j++)
 			{
-				Bones.push_back(jimmy[i].Position[j]);
+				Bones.push_back(/*jimmy*/CurrJoints[i].Position[j]);
 			}
 
 		}
 		DXVault.bufferdemBones(Bones);
 		DXVault.Render();
-		
+		CurrJoints.clear();
 		if (GetAsyncKeyState('E') & 0x01)
 		{
 			key++;
 		}
-		if (key >= 60)
+		if (key >= CurrJoints.size())
 		{
 			key = 0;
 		}
