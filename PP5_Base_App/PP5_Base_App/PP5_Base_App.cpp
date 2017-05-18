@@ -80,6 +80,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	notNow = std::chrono::system_clock::now();
 	float totalTime = 0;
     // Main message loop:
+	FBXinteracts::AnimClip anims = yee.getAnimation();
     while (!stopYouCuck)
     {
 		totalTime += (std::chrono::system_clock::now() - notNow).count() / 10000000.0f;
@@ -106,12 +107,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		/*jimmy.clear();
 		jimmy = yee.getAnimation().keys[key].bones;*/
-		float lastTime = yee.getAnimation().keys[yee.getAnimation().keys.size() - 1].time;
+		
+		float lastTime = anims.keys[anims.keys.size() - 1].time;
 		float mtime = fmod(totalTime, lastTime);
 		int frame = 1;
-		for (int i = 1; i <yee.getAnimation().keys.size() - 1; i++)
+		for (int i = 1; i <anims.keys.size() - 1; i++)
 		{
-			if (yee.getAnimation().keys[i].time > mtime)
+			if (anims.keys[i].time > mtime)
 			{
 				frame = i;
 				break;
@@ -120,18 +122,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		int prevFrame = frame - 1;
 		if (prevFrame == 0)
 		{
-			prevFrame = yee.getAnimation().keys.size() - 1;
+			prevFrame = anims.keys.size() - 1;
 		}
 
-		float timeDiff = yee.getAnimation().keys[frame].time - yee.getAnimation().keys[prevFrame].time;
-		float timeIn = mtime - yee.getAnimation().keys[prevFrame].time;
+		float timeDiff = anims.keys[frame].time - anims.keys[prevFrame].time;
+		float timeIn = mtime - anims.keys[prevFrame].time;
 		float ratio = timeIn / timeDiff;
 		std::vector<FBXinteracts::vert> CurrJoints; // yee.getAnimation().keys[prevFrame].bones;
-		for (int i = 0; i < yee.getAnimation().keys[prevFrame].bones.size(); i++)
+		for (int i = 0; i < anims.keys[prevFrame].bones.size(); i++)
 		{
 			FBXinteracts::vert v1, v2,v3;
-			v1 = yee.getAnimation().keys[prevFrame].bones[i];
-			v2 = yee.getAnimation().keys[frame].bones[i];
+			v1 = anims.keys[prevFrame].bones[i];
+			v2 = anims.keys[frame].bones[i];
 			v3.Position[0] = (v2.Position[0] - v1.Position[0])*ratio + v1.Position[0];
 			v3.Position[1] = (v2.Position[1] - v1.Position[1])*ratio + v1.Position[1];
 			v3.Position[2] = (v2.Position[2] - v1.Position[2])*ratio + v1.Position[2];

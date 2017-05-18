@@ -1,7 +1,11 @@
-﻿  DirectXVault.cpp
-c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\crtdbg.h(302): warning C4005: '_malloca': macro redefinition
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\malloc.h(120): note: see previous definition of '_malloca'
-c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\directxvault.cpp(319): warning C4018: '<': signed/unsigned mismatch
-c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\directxvault.cpp(410): warning C4018: '<': signed/unsigned mismatch
+﻿  PP5_Base_App.cpp
+c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\pp5_base_app.cpp(61): warning C4018: '<': signed/unsigned mismatch
+c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\pp5_base_app.cpp(111): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\pp5_base_app.cpp(114): warning C4018: '<': signed/unsigned mismatch
+c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\pp5_base_app.cpp(128): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\pp5_base_app.cpp(129): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\pp5_base_app.cpp(132): warning C4018: '<': signed/unsigned mismatch
+c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\pp5_base_app.cpp(148): warning C4018: '<': signed/unsigned mismatch
+c:\users\pablo\desktop\pp5\pp5_base_app\pp5_base_app\pp5_base_app.cpp(163): warning C4018: '>=': signed/unsigned mismatch
   PP5_Base_App.vcxproj -> C:\Users\Pablo\Desktop\PP5\PP5_Base_App\Debug\PP5_Base_App.exe
   PP5_Base_App.vcxproj -> C:\Users\Pablo\Desktop\PP5\PP5_Base_App\Debug\PP5_Base_App.pdb (Full PDB)
