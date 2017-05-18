@@ -215,7 +215,7 @@ namespace FBXinteracts {
 	void Functions::SetupFBX() 
 	{
 		//// Change the following filename to a suitable filename value.
-		const char* lFilename = "Teddy_Idle.fbx";
+		const char* lFilename = "Teddy_Run.fbx";
 
 		//// Initialize the SDK manager. This object handles memory management.
 		FbxManager* lSdkManager = FbxManager::Create();
