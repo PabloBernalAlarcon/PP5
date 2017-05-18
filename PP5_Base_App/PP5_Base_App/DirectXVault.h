@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 #include <vector>
-
 class DirectXVault
 {
 public:
@@ -15,6 +14,7 @@ public:
 	DirectXVault();
 	~DirectXVault();
 	
+ID3D11Debug * whatyouplease = nullptr;
 	
 
 
@@ -84,7 +84,7 @@ public:
 	ID3D11Buffer* lineBufferx = nullptr;
 	ID3D11Buffer* lineBuffery = nullptr;
 	ID3D11Buffer* GridBuffer = nullptr;
-	ID3D11Buffer* lineBufferz = nullptr;
+	//ID3D11Buffer* lineBufferz = nullptr;
 
 	POINT MousePos;
 	//POINT NewMousePos;

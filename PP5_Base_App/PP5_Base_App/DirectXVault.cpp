@@ -16,23 +16,40 @@ DirectXVault::DirectXVault()
 
 DirectXVault::~DirectXVault()
 {
-	if(pipelineState.depthStencilBuffer != nullptr)pipelineState.depthStencilBuffer->Release();
-	if(pipelineState.depthStencilState!= nullptr)pipelineState.depthStencilState->Release();
-	if(pipelineState.depthStencilView != nullptr) pipelineState.depthStencilView->Release();
-	pipelineState.input_layout->Release();
 	pipelineState.pixel_shader->Release();
-	if(pipelineState.rasterState != nullptr)pipelineState.rasterState->Release();
+	debugpipelineState.pixel_shader->Release();
+	pipelineState.input_layout->Release();
+	debugpipelineState.input_layout->Release();
 	pipelineState.vertex_shader->Release();
+	debugpipelineState.vertex_shader->Release();
+	if (debugpipelineState.depthStencilView != nullptr)  debugpipelineState.depthStencilView->Release();
+	if(pipelineState.depthStencilBuffer != nullptr)pipelineState.depthStencilBuffer->Release();
+	if (debugpipelineState.depthStencilBuffer != nullptr)debugpipelineState.depthStencilBuffer->Release();
+	if(pipelineState.depthStencilState!= nullptr)pipelineState.depthStencilState->Release();
+	if (debugpipelineState.depthStencilState != nullptr) debugpipelineState.depthStencilState->Release();
+	if(pipelineState.rasterState != nullptr)pipelineState.rasterState->Release();
+	if (debugpipelineState.rasterState != nullptr)pipelineState.rasterState->Release();
+	if(pipelineState.depthStencilView != nullptr) pipelineState.depthStencilView->Release();
 	pipelineState.indexbuffer->Release();
 	attribute.device->Release();
 	if (attribute.device_context) attribute.device_context->Release();
 	attribute.render_target->Release();
 	attribute.swap_chain->Release();
 
+	if (debugpipelineState.indexbuffer != nullptr)debugpipelineState.indexbuffer->Release();
+	//debugattribute.device->Release();
+	//if (debugattribute.device_context != nullptr) debugattribute.device_context->Release();
+	//debugattribute.render_target->Release();
+	//debugattribute.swap_chain->Release();
+
 	matBuffer->Release();
 	lineBufferx->Release();
+	lineBuffery->Release();
+	//lineBufferz->Release();
 	GridBuffer->Release();
 	//lineBufferz->Release();
+	whatyouplease->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+	whatyouplease->Release();
 }
 
 
@@ -64,6 +81,8 @@ void DirectXVault::Start(HWND window, std::vector<float>& _Position/*, std::vect
 	leSwapchainDesc.BufferDesc.Height = HEIGHT;
 	leSwapchainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	leSwapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	leSwapchainDesc.BufferDesc.RefreshRate.Numerator = 60;
+	leSwapchainDesc.BufferDesc.RefreshRate.Denominator = 1;
 	leSwapchainDesc.OutputWindow = wind;
 	leSwapchainDesc.SampleDesc.Count = 1;
 	leSwapchainDesc.Windowed = true;
@@ -100,7 +119,7 @@ void DirectXVault::Start(HWND window, std::vector<float>& _Position/*, std::vect
 	attribute.device->CreateRasterizerState(&desc, &pipelineState.debugRasterState);
 
 	debugattribute = attribute;
-
+	attribute.device->QueryInterface(IID_PPV_ARGS(&whatyouplease));
 	SetUpShadersForACoolTriangle();
 	BufferUpTheTriangle();
 	BufferUpTheLines();
@@ -109,31 +128,7 @@ void DirectXVault::Start(HWND window, std::vector<float>& _Position/*, std::vect
 	XMStoreFloat4x4(&matrix.translation, DirectX::XMMatrixIdentity());
 	XMStoreFloat4x4(&matrix.view,DirectX::XMMatrixIdentity());
 	//XMStoreFloat4x4(&matrix.projection, DirectX::XMMatrixIdentity());
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//	HRESULT Resultt = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL,
-//		leDeviceFlags, leFeatureArray, lefeatureLevelsAmount, D3D11_SDK_VERSION, &leSwapchainDesc,
-//		&attribute.swap_chain, &attribute.device, &attribute.feature_levels, &attribute.device_context);
-//
-//	ID3D11Texture2D * leRenderTargetTempp = 0;
-//	attribute.swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&leRenderTargetTempp);
-//	attribute.device->CreateRenderTargetView(leRenderTargetTempp, nullptr, &attribute.render_target);
-//	leRenderTargetTempp->Release();
-//
-//	attribute.device_context->OMSetRenderTargets(1, &attribute.render_target, nullptr);
-//
-//	ZeroMemory(&attribute.viewport, sizeof(D3D11_VIEWPORT));
-//	attribute.viewport.Width = width;
-//	attribute.viewport.Height = height;
-//	attribute.viewport.MaxDepth = 1.0f;
-//	attribute.viewport.MinDepth = 0.0f;
-//	attribute.viewport.TopLeftX = 0;
-//	attribute.viewport.TopLeftY = 0;
-//
-//
-//	attribute.device_context->RSSetViewports(1, &attribute.viewport);
-//	SetUpShadersForCoolLines();
-//	BufferUpTheLines();
+
 }
 
 void DirectXVault::Render() {
@@ -447,8 +442,8 @@ void DirectXVault::bufferdemBones(std::vector<float>& _Bones) {
 	memcpy(ms.pData, BonesVerts.data(), BonesVerts.size() * sizeof(vertex));                 // copy the data
 	debugattribute.device_context->Unmap(lineBuffery, NULL);
 
-	CD3D11_BUFFER_DESC bdm(sizeof(leMatrix), D3D11_BIND_CONSTANT_BUFFER);
-	debugattribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
+	//CD3D11_BUFFER_DESC bdm(sizeof(leMatrix), D3D11_BIND_CONSTANT_BUFFER);
+	//debugattribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
 }
 void DirectXVault::DrawTheCoolestTriangle() {
 
