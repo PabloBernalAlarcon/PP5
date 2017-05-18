@@ -217,73 +217,73 @@ void DirectXVault::BufferUpTheTriangle() {
 void DirectXVault::BufferUpTheGrid() {
 	vertex OurVertices[] =
 	{
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f,-1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f,-10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-0.8f, 0.0f,-1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(-0.8f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-
-		 { DirectX::XMFLOAT4(-0.6f, 0.0f,-1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(-0.6f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-
-		 { DirectX::XMFLOAT4(-0.4f, 0.0f,-1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(-0.4f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-
-		 { DirectX::XMFLOAT4(-0.2f, 0.0f,-1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(-0.2f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-
-		 { DirectX::XMFLOAT4(0.0f, 0.0f, -1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-		 { DirectX::XMFLOAT4( 0.0f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-
-		 { DirectX::XMFLOAT4(0.2f, 0.0f, -1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4( 0.2f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-
-		 { DirectX::XMFLOAT4(0.4f, 0.0f, -1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4( 0.4f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-
-		 { DirectX::XMFLOAT4(0.6f, 0.0f, -1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-		 { DirectX::XMFLOAT4( 0.6f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-
-		 { DirectX::XMFLOAT4(0.8f, 0.0f, -1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4( 0.8f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, -1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4( 1.0f, 0.0f, 1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-8.0f, 0.0f,-10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-8.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+										   
+		 { DirectX::XMFLOAT4(-6.0f, 0.0f,-10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-6.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
+										   
+		 { DirectX::XMFLOAT4(-4.0f, 0.0f,-10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-4.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+										   
+		 { DirectX::XMFLOAT4(-2.0f, 0.0f,-10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-2.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+										   
+		 { DirectX::XMFLOAT4(0.0f,  0.0f, -10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
+										   
+		 { DirectX::XMFLOAT4(2.0f,  0.0f, -10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(2.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+										   
+		 { DirectX::XMFLOAT4(4.0f,  0.0f, -10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(4.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+										   
+		 { DirectX::XMFLOAT4(6.0f,  0.0f, -10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(6.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
+										   
+		 { DirectX::XMFLOAT4(8.0f,  0.0f, -10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(8.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+										   
+		 { DirectX::XMFLOAT4(10.0f,  0.0f, -10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, 10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
 
 		 ///////////////////////////////////////////////////////////////////////////////////////////
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, -1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, -1.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, -10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, -10.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, -0.8f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, -0.8f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, -8.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, -8.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, -0.6f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, -0.6f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, -6.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, -6.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, -0.4f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, -0.4f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, -4.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, -4.0f,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, -0.2f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, -0.2f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, -2.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, -2.0f,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, 0.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, 0.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, 0.2f ,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, 0.2f ,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, 2.0f ,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, 2.0f ,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, 0.4f ,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, 0.4f ,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, 4.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, 4.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, 0.6f ,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, 0.6f ,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, 6.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, 6.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 10.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, 0.8f ,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, 0.8f ,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, 8.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, 8.0f ,1.0f),DirectX::XMFLOAT4(0.0f, 10.0f, 0.0f, 1.0f) },
 
-		 { DirectX::XMFLOAT4(-1.0f, 0.0f, 1.0f ,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
-		 { DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f ,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(-10.0f, 0.0f, 10.0f ,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
+		 { DirectX::XMFLOAT4(10.0f, 0.0f, 10.0f ,1.0f),DirectX::XMFLOAT4(10.0f, 0.0f, 0.0f, 1.0f) },
 
 	};
 

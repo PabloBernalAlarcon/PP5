@@ -1,3 +1,4 @@
+PABLO BERNAL ALARCON
 Camera Controls:
 
 Hold Right Click and use mouse to control camera
@@ -6,3 +7,5 @@ Basic movement: WASD
 
 Go up: B
 Go down: X
+Change Modes: T
+Weird Stuff with the camera: Q

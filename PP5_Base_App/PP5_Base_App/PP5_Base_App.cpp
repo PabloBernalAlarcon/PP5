@@ -83,7 +83,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	FBXinteracts::AnimClip anims = yee.getAnimation();
     while (!stopYouCuck)
     {
-		totalTime += (std::chrono::system_clock::now() - notNow).count() / 100000000.0f;
+		totalTime += (std::chrono::system_clock::now() - notNow).count() / 10000000.0f;
 		notNow = std::chrono::system_clock::now();
 
 		while (PeekMessageA(&msg, nullptr, 0, 0,PM_REMOVE))
