@@ -103,32 +103,70 @@ namespace FBXinteracts {
 	void LoadNode(FbxNode * pNode) {
 		
 		FbxMesh * leMesh = pNode->GetMesh();
-		FbxGeometryElementNormal* lNormalElement = leMesh->GetElementNormal();
+		int vertCnt = leMesh->GetControlPointsCount();
+		std::vector<vert> temporaryVerts;
+		std::vector<vert> shrek;
+		for (int v = 0; v < vertCnt; ++v)
+		{
+
+			FbxVector4 holden = leMesh->GetControlPointAt(v);
+			vert myVert;
+			for (int i = 0; i < 3; ++i)
+				myVert.Position[i] = (float)holden.mData[i];
+			temporaryVerts.push_back(myVert);
+
+		}
+		//FbxGeometryElementNormal* lNormalElement = leMesh->GetElementNormal();
+			int ttt = leMesh->GetPolygonCount();
 		
+			FbxStringList uvlist;
+			leMesh->GetUVSetNames(uvlist);
+
 		for (int i = 0; i < leMesh->GetPolygonCount(); i++)
 		{
-		
+			FbxVector2 uv;
+			bool unmapped;
+			leMesh->GetPolygonVertexUV(i, 0, uvlist.GetStringAt(0), uv, unmapped);
+			int index = leMesh->GetPolygonVertex(i, 0);
+			FbxVector4 normal;
+			leMesh->GetPolygonVertexNormal(i, 0, normal);
+			
 			Indices.push_back(leMesh->GetPolygonVertex(i, 0));
 			Indices.push_back(leMesh->GetPolygonVertex(i, 1));
 			Indices.push_back(leMesh->GetPolygonVertex(i, 2));
+			
+			vert ben;
+			ben.Position[0] = temporaryVerts[index].Position[0];
+			ben.Position[1] = temporaryVerts[index].Position[1];
+			ben.Position[2] = temporaryVerts[index].Position[2];
+			ben.Position[3] = 1;
 
+			ben.Color[0] = 1;
+			ben.Color[1] = 0.0f;
+			ben.Color[1] = uv[0];
+			ben.Color[1] = uv[1];
+
+			shrek.push_back(ben);
 		}
+
+		int tiddy =Indices.size();
 		
 		for (int i = 0; i < leMesh->GetControlPointsCount(); i++)
 		{
+			
 			FbxVector4 holden = leMesh->GetControlPointAt(i);
-			int lNormalIndex = 0;
-			if (lNormalElement->GetReferenceMode() == FbxGeometryElement::eDirect)
-			{
-				lNormalIndex = i;
-			}
-
-			//reference mode is index-to-direct, get normals by the index-to-direct
-			if (lNormalElement->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
-				lNormalIndex = lNormalElement->GetIndexArray().GetAt(i);
+		//	int lNormalIndex = 0;
+		//	if (lNormalElement->GetReferenceMode() == FbxGeometryElement::eDirect)
+		//	{
+		//		lNormalIndex = i;
+		//	}
+		//
+		//	//reference mode is index-to-direct, get normals by the index-to-direct
+		//	if (lNormalElement->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+		//		lNormalIndex = lNormalElement->GetIndexArray().GetAt(i);
 
 			//Got normals of each vertex.
-			FbxVector4 lNormal = lNormalElement->GetDirectArray().GetAt(lNormalIndex);
+			//FbxVector4 lNormal = lNormalElement->GetDirectArray().GetAt(lNormalIndex);
 			
 			vert ben; 
 			ben.Position[0] = holden.mData[0];
@@ -138,7 +176,10 @@ namespace FBXinteracts {
 			
 			becky.push_back(ben);
 		}
+
+		int oo =becky.size();
 	}
+
 	/**
 	* Print a node, its attributes, and all its children recursively.
 	*/
@@ -224,10 +265,10 @@ namespace FBXinteracts {
 		PrintTabs();
 		printf("</node>\n");
 	}
-	void Functions::SetupFBX() 
+	void Functions::SetupFBX(const char* lFilename)
 	{
 		//// Change the following filename to a suitable filename value.
-		const char* lFilename = "Teddy_Run.fbx";
+		//const char* lFilename = "Teddy_Run.fbx";
 
 		//// Initialize the SDK manager. This object handles memory management.
 		FbxManager* lSdkManager = FbxManager::Create();

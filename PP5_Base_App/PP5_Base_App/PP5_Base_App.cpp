@@ -6,14 +6,18 @@
 #include <iostream>
 #include "DirectXVault.h"
 #include <chrono>
-#include "FBXInteraction.h"
+#include "../FBXMagic/FBXInteraction.h"
 #define MAX_LOADSTRING 100
 
 // Global Variables:
 HINSTANCE hInst;    
 FBXinteracts::Functions yee;
+FBXinteracts::Functions weap;
 std::vector<float> Bones;
 std::vector<float> vertices;
+
+std::vector<float> WeapBones;
+std::vector<float> Weapvertices;
 // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
@@ -56,7 +60,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	freopen_s(&new_std_in_out, "CONOUT$", "w", stdout);
 	freopen_s(&new_std_in_out, "CONIN$", "r", stdin);
 	std::cout << "Hello world!\n";
-	yee.SetupFBX();
+	yee.SetupFBX("Teddy_Run.fbx");
+	weap.SetupFBX("Box_Idle.fbx");
 	std::vector<uint32_t> jimmy = yee.getIndices();
 	for (int i = 0; i < yee.getvertsSize(); i++)
 	{
@@ -65,7 +70,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			vertices.push_back(yee.getverts(i, j));
 		}
 	}
-	DXVault.Start(hWnd,vertices,jimmy);
+
+	std::vector<uint32_t> jimmy2 = weap.getIndices();
+	for (int i = 0; i < weap.getvertsSize(); i++)
+	{
+		for (int j = 0; j <= 3; j++)
+		{
+			Weapvertices.push_back(weap.getverts(i, j));
+		}
+	}
+	DXVault.Start(hWnd,vertices,jimmy,Weapvertices,jimmy2);
 	//std::cout << yee.GimmeSomething();
 	
 #endif
@@ -84,7 +98,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	FBXinteracts::AnimClip anims = yee.getAnimation();
     while (!stopYouCuck)
     {
-		totalTime += (std::chrono::system_clock::now() - notNow).count() / 10000000.0f;
+		totalTime += (std::chrono::system_clock::now() - notNow).count() / 1000000000.0f;
 		notNow = std::chrono::system_clock::now();
 
 		while (PeekMessageA(&msg, nullptr, 0, 0,PM_REMOVE))

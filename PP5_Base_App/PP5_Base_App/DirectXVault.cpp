@@ -16,12 +16,13 @@ DirectXVault::DirectXVault()
 
 DirectXVault::~DirectXVault()
 {
-	pipelineState.pixel_shader->Release();
-	debugpipelineState.pixel_shader->Release();
-	pipelineState.input_layout->Release();
-	debugpipelineState.input_layout->Release();
-	pipelineState.vertex_shader->Release();
-	debugpipelineState.vertex_shader->Release();
+	if (pipelineState.pixel_shader != nullptr) pipelineState.pixel_shader->Release();
+	
+if(debugpipelineState.pixel_shader != nullptr)	debugpipelineState.pixel_shader->Release();
+	if(pipelineState.input_layout != nullptr)  pipelineState.input_layout->Release();
+	if(debugpipelineState.input_layout != nullptr) debugpipelineState.input_layout->Release();
+	if(pipelineState.vertex_shader != nullptr) pipelineState.vertex_shader->Release();
+	if(debugpipelineState.vertex_shader != nullptr) debugpipelineState.vertex_shader->Release();
 	if (debugpipelineState.depthStencilView != nullptr)  debugpipelineState.depthStencilView->Release();
 	if(pipelineState.depthStencilBuffer != nullptr)pipelineState.depthStencilBuffer->Release();
 	if (debugpipelineState.depthStencilBuffer != nullptr)debugpipelineState.depthStencilBuffer->Release();
@@ -30,11 +31,11 @@ DirectXVault::~DirectXVault()
 	if(pipelineState.rasterState != nullptr)pipelineState.rasterState->Release();
 	if (debugpipelineState.rasterState != nullptr)pipelineState.rasterState->Release();
 	if(pipelineState.depthStencilView != nullptr) pipelineState.depthStencilView->Release();
-	pipelineState.indexbuffer->Release();
-	attribute.device->Release();
-	if (attribute.device_context) attribute.device_context->Release();
-	attribute.render_target->Release();
-	attribute.swap_chain->Release();
+	if(pipelineState.indexbuffer != nullptr)	pipelineState.indexbuffer->Release();
+	if (attribute.device != nullptr) attribute.device->Release();
+	if (attribute.device_context != nullptr) attribute.device_context->Release();
+	if(attribute.render_target != nullptr) attribute.render_target->Release();
+	if(attribute.swap_chain != nullptr) attribute.swap_chain->Release();
 
 	if (debugpipelineState.indexbuffer != nullptr)debugpipelineState.indexbuffer->Release();
 	//debugattribute.device->Release();
@@ -53,11 +54,13 @@ DirectXVault::~DirectXVault()
 }
 
 
-void DirectXVault::Start(HWND window, std::vector<float>& _Position, std::vector<uint32_t>& indices) {
+void DirectXVault::Start(HWND window, std::vector<float>& _Position, std::vector<uint32_t>& indices,std::vector<float>& _Position2, std::vector<uint32_t>& indices2) {
 
 	wind = window;
 	_indices = indices;
 	Positions = _Position;
+	W_indices = indices2;
+	WPositions = _Position2;
 	//Bones = _Bones;
 	UINT leDeviceFlags = 0;
 #ifdef _DEBUG
@@ -188,30 +191,73 @@ void DirectXVault::SetUpShadersForACoolTriangle() {
 }
 
 void DirectXVault::BufferUpTheTriangle() {
-	vertex OurVertices[] =
+
+
+	std::vector<vertex>  OurVerticesx;// = new std::vector<vertex>;
+	std::vector<vertex>  OurVertices2;// = new std::vector<vertex>;
+
+
+	for (int i = 0; i < WPositions.size(); i += 4)
 	{
-		{DirectX::XMFLOAT4(0.0f, 0.5f, 0.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-		{ DirectX::XMFLOAT4(0.45f, -0.5, 0.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-		{ DirectX::XMFLOAT4(-0.45f, -0.5f, 0.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }
-	};
+		vertex v;
+		v.Position.x = WPositions[i];
+		v.Position.y = WPositions[i + 1];
+		v.Position.z = WPositions[i + 2];
+		v.Position.w = 1.0f; //Positions[i + 3];
+
+		v.Color = { 1.0f,0.0f,1.0f,1.0f };
+		OurVerticesx.push_back(v);
+
+	}
 
 
+	sizetodraw = OurVerticesx.size();
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
-	bd.ByteWidth = sizeof(vertex) * 3;             // size is the VERTEX struct * 3
+	bd.ByteWidth = sizeof(vertex) * OurVerticesx.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
 
-	attribute.device->CreateBuffer(&bd, NULL, &pipelineState.indexbuffer);       // create the buffer
+	D3D11_SUBRESOURCE_DATA SUBRESx;
+	SUBRESx.pSysMem = OurVerticesx.data();
+	SUBRESx.SysMemPitch = 0;
+	SUBRESx.SysMemSlicePitch = 0;
+
+	attribute.device->CreateBuffer(&bd, &SUBRESx, &pipelineState.indexbuffer);       // create the buffer
 
 
-												   // copy the vertices into the buffer
-	D3D11_MAPPED_SUBRESOURCE ms;
-	attribute.device_context->Map(pipelineState.indexbuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
-	memcpy(ms.pData, OurVertices, sizeof(OurVertices));                 // copy the data
-	attribute.device_context->Unmap(pipelineState.indexbuffer, NULL);                                      // unmap the buffer
+	D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
+	indexBufferData.pSysMem = W_indices.data();
+	indexBufferData.SysMemPitch = 0;
+	indexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC indexBufferDesc(sizeof(uint32_t) * W_indices.size(), D3D11_BIND_INDEX_BUFFER);
+	attribute.device->CreateBuffer(&indexBufferDesc, &indexBufferData, &WeapIndexBuffer);
+	//vertex OurVertices[] =
+	//{
+	//	{DirectX::XMFLOAT4(0.0f, 0.5f, 0.0f,1.0f),DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	//	{ DirectX::XMFLOAT4(0.45f, -0.5, 0.0f,1.0f),DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
+	//	{ DirectX::XMFLOAT4(-0.45f, -0.5f, 0.0f,1.0f),DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }
+	//};
+
+
+	//D3D11_BUFFER_DESC bd;
+	//ZeroMemory(&bd, sizeof(bd));
+
+	//bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
+	//bd.ByteWidth = sizeof(vertex) * 3;             // size is the VERTEX struct * 3
+	//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
+	//bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
+
+	//attribute.device->CreateBuffer(&bd, NULL, &pipelineState.indexbuffer);       // create the buffer
+
+
+	//											   // copy the vertices into the buffer
+	//D3D11_MAPPED_SUBRESOURCE ms;
+	//attribute.device_context->Map(pipelineState.indexbuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
+	//memcpy(ms.pData, OurVertices, sizeof(OurVertices));                 // copy the data
+	//attribute.device_context->Unmap(pipelineState.indexbuffer, NULL);                                      // unmap the buffer
 }
 
 void DirectXVault::BufferUpTheGrid() {
@@ -330,17 +376,6 @@ void DirectXVault::BufferUpTheLines() {
 
 	}
 
-	/*for (int i = 0; i < OurVerticesx.size() / 3; i++)
-	{
-		OurVertices2.push_back(OurVerticesx[i*3 +0]);
-		OurVertices2.push_back(OurVerticesx[i*3 +1]);
-		OurVertices2.push_back(OurVerticesx[i*3 +1]);
-		OurVertices2.push_back(OurVerticesx[i*3 +2]);
-		OurVertices2.push_back(OurVerticesx[i*3 +2]);
-		OurVertices2.push_back(OurVerticesx[i*3 +0]);
-	}
-*/
-
 
 	sizetodraw = OurVerticesx.size();
 	D3D11_BUFFER_DESC bd;
@@ -416,21 +451,37 @@ void DirectXVault::bufferdemBones(std::vector<float>& _Bones) {
 	//debugattribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
 }
 void DirectXVault::DrawTheCoolestTriangle() {
-
-
-
+	if (toggle) {
+		attribute.device_context->RSSetState(pipelineState.rasterState);
+	}
+	else
+		attribute.device_context->RSSetState(pipelineState.debugRasterState);
+	////body////
 	attribute.device_context->PSSetShader(pipelineState.pixel_shader, NULL, 0);
 	attribute.device_context->VSSetShader(pipelineState.vertex_shader, NULL, 0);
-	// select which vertex buffer to display
+
+	//// select which vertex buffer to display
 	UINT stride = sizeof(vertex);
 	UINT offset = 0;
-	attribute.device_context->IASetVertexBuffers(0, 1, &pipelineState.indexbuffer, &stride, &offset);
-
-	// select which primtive type we are using
+	//// select which primtive type we are using
 	attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//// draw the vertex buffer to the back buffer
+	attribute.device_context->IASetVertexBuffers(0, 1, &pipelineState.indexbuffer, &stride, &offset);
+	attribute.device_context->IASetIndexBuffer(WeapIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	attribute.device_context->DrawIndexed(W_indices.size(), 0, 0);
 
-	// draw the vertex buffer to the back buffer
-	attribute.device_context->Draw(3, 0);
+	//attribute.device_context->PSSetShader(pipelineState.pixel_shader, NULL, 0);
+	//attribute.device_context->VSSetShader(pipelineState.vertex_shader, NULL, 0);
+	//// select which vertex buffer to display
+	//UINT stride = sizeof(vertex);
+	//UINT offset = 0;
+	//attribute.device_context->IASetVertexBuffers(0, 1, &pipelineState.indexbuffer, &stride, &offset);
+
+	//// select which primtive type we are using
+	//attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//// draw the vertex buffer to the back buffer
+	//attribute.device_context->Draw(3, 0);
 
 }
 

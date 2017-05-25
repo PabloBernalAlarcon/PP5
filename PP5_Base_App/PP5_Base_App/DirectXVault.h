@@ -63,6 +63,11 @@ ID3D11Debug * whatyouplease = nullptr;
 	std::vector<float> Positions;
 	std::vector<float> Bones;
 	std::vector<uint32_t> _indices;
+
+	std::vector<float> WPositions;
+	std::vector<float> WBones;
+	std::vector<uint32_t> W_indices;
+
 	int sizetodraw;
 	int sizetodrawBones;
 	pipeline_state_t pipelineState;
@@ -86,6 +91,7 @@ ID3D11Debug * whatyouplease = nullptr;
 	ID3D11Buffer* IndexBuffer = nullptr;
 	ID3D11Buffer* lineBuffery = nullptr;
 	ID3D11Buffer* GridBuffer = nullptr;
+	ID3D11Buffer* WeapIndexBuffer = nullptr;
 	//ID3D11Buffer* lineBufferz = nullptr;
 
 	POINT MousePos;
@@ -93,7 +99,7 @@ ID3D11Debug * whatyouplease = nullptr;
 
 	HWND wind;
 
-	void Start(HWND window, std::vector<float>& _Position, std::vector<uint32_t> &indices);
+	void Start(HWND window, std::vector<float>& _Position, std::vector<uint32_t> &indices, std::vector<float>& _Position2, std::vector<uint32_t>& indices2);
 	void Render();
 	void SetUpShadersForACoolTriangle();
 	void BufferUpTheTriangle();
