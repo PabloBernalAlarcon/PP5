@@ -62,6 +62,7 @@ ID3D11Debug * whatyouplease = nullptr;
 	ID3D11RasterizerState * debugRasterizer;
 	std::vector<float> Positions;
 	std::vector<float> Bones;
+	std::vector<uint32_t> _indices;
 	int sizetodraw;
 	int sizetodrawBones;
 	pipeline_state_t pipelineState;
@@ -82,6 +83,7 @@ ID3D11Debug * whatyouplease = nullptr;
 	POINT prevPoint;
 
 	ID3D11Buffer* lineBufferx = nullptr;
+	ID3D11Buffer* IndexBuffer = nullptr;
 	ID3D11Buffer* lineBuffery = nullptr;
 	ID3D11Buffer* GridBuffer = nullptr;
 	//ID3D11Buffer* lineBufferz = nullptr;
@@ -91,7 +93,7 @@ ID3D11Debug * whatyouplease = nullptr;
 
 	HWND wind;
 
-	void Start(HWND window, std::vector<float>& _Position/*, std::vector<float>& _Bones*/);
+	void Start(HWND window, std::vector<float>& _Position, std::vector<uint32_t> &indices);
 	void Render();
 	void SetUpShadersForACoolTriangle();
 	void BufferUpTheTriangle();

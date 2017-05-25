@@ -57,7 +57,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	freopen_s(&new_std_in_out, "CONIN$", "r", stdin);
 	std::cout << "Hello world!\n";
 	yee.SetupFBX();
-
+	std::vector<uint32_t> jimmy = yee.getIndices();
 	for (int i = 0; i < yee.getvertsSize(); i++)
 	{
 		for (int j = 0; j <= 3; j++)
@@ -65,7 +65,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			vertices.push_back(yee.getverts(i, j));
 		}
 	}
-	DXVault.Start(hWnd,vertices/*, Bones*/);
+	DXVault.Start(hWnd,vertices,jimmy);
 	//std::cout << yee.GimmeSomething();
 	
 #endif
@@ -74,7 +74,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 	int key = 0;
-	std::vector<FBXinteracts::vert> jimmy;
+	//std::vector<int> jimmy = yee.getIndices();
+	
 	bool stopYouCuck = false;
 	std::chrono::time_point<std::chrono::system_clock> notNow;
 	notNow = std::chrono::system_clock::now();

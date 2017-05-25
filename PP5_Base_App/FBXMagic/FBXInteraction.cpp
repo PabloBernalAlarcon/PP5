@@ -17,7 +17,7 @@ namespace FBXinteracts {
 	int numTabs = 0;
 	std::vector<float> Positions;
 	std::vector<vert> becky;
-	std::vector<int> Indices;
+	std::vector<uint32_t> Indices;
 	/**
 	* Print the required number of tabs.
 	*/
@@ -103,7 +103,7 @@ namespace FBXinteracts {
 	void LoadNode(FbxNode * pNode) {
 		
 		FbxMesh * leMesh = pNode->GetMesh();
-	
+		FbxGeometryElementNormal* lNormalElement = leMesh->GetElementNormal();
 		
 		for (int i = 0; i < leMesh->GetPolygonCount(); i++)
 		{
@@ -114,16 +114,28 @@ namespace FBXinteracts {
 
 		}
 		
-		for (int i = 0; i < Indices.size(); i++)
+		for (int i = 0; i < leMesh->GetControlPointsCount(); i++)
 		{
-			FbxVector4 holden = leMesh->GetControlPointAt(Indices[i]);
+			FbxVector4 holden = leMesh->GetControlPointAt(i);
+			int lNormalIndex = 0;
+			if (lNormalElement->GetReferenceMode() == FbxGeometryElement::eDirect)
+			{
+				lNormalIndex = i;
+			}
 
+			//reference mode is index-to-direct, get normals by the index-to-direct
+			if (lNormalElement->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+				lNormalIndex = lNormalElement->GetIndexArray().GetAt(i);
+
+			//Got normals of each vertex.
+			FbxVector4 lNormal = lNormalElement->GetDirectArray().GetAt(lNormalIndex);
+			
 			vert ben; 
 			ben.Position[0] = holden.mData[0];
 			ben.Position[1] = holden.mData[1];
 			ben.Position[2] = holden.mData[2];
 			ben.Position[3] = holden.mData[3];
-
+			
 			becky.push_back(ben);
 		}
 	}
@@ -277,4 +289,6 @@ namespace FBXinteracts {
 	unsigned int Functions::getvertsSize() {
 		return becky.size();
 	}
+
+	std::vector<uint32_t> Functions::getIndices() { return Indices; }
 }

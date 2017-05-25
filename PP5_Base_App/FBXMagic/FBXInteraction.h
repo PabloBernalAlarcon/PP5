@@ -17,6 +17,9 @@ namespace FBXinteracts
 {
 	struct vert {
 		float Position[4];
+		float Color[4];
+		int BoneId[4];
+		float Weights[4];
 	};
 
 	struct KeyFrame {
@@ -51,6 +54,8 @@ namespace FBXinteracts
 		static FBXINTERACTION_API unsigned int getvertsSize();
 
 		static FBXINTERACTION_API unsigned int getPositionsSize();
+
+		FBXINTERACTION_API std::vector<uint32_t> getIndices();
 
 		static FBXINTERACTION_API float getPositions(unsigned int indicesVec);
 

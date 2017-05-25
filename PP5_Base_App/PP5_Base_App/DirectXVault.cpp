@@ -53,10 +53,10 @@ DirectXVault::~DirectXVault()
 }
 
 
-void DirectXVault::Start(HWND window, std::vector<float>& _Position/*, std::vector<float>& _Bones*/) {
+void DirectXVault::Start(HWND window, std::vector<float>& _Position, std::vector<uint32_t>& indices) {
 
 	wind = window;
-
+	_indices = indices;
 	Positions = _Position;
 	//Bones = _Bones;
 	UINT leDeviceFlags = 0;
@@ -308,6 +308,7 @@ void DirectXVault::BufferUpTheGrid() {
 	attribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
 
 }
+
 void DirectXVault::BufferUpTheLines() {
 	
 
@@ -356,49 +357,16 @@ void DirectXVault::BufferUpTheLines() {
 	SUBRESx.SysMemSlicePitch = 0;
 
 	attribute.device->CreateBuffer(&bd, &SUBRESx, &lineBufferx);       // create the buffer
-      // create the buffer
 
 
-	////bones
-	//std::vector<vertex> BonesVerts;
+	D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
+	indexBufferData.pSysMem = _indices.data();
+	indexBufferData.SysMemPitch = 0;
+	indexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC indexBufferDesc(sizeof(uint32_t) *  _indices.size(), D3D11_BIND_INDEX_BUFFER);
+	attribute.device->CreateBuffer(&indexBufferDesc, &indexBufferData, &IndexBuffer);
+	//nRenderable->indexCount = indexCount;
 
-	//for (int i = 0; i < Bones.size(); i += 4)
-	//{
-	//	vertex v;
-	//	v.Position.x = Bones[i];
-	//	v.Position.y = Bones[i + 1];
-	//	v.Position.z = Bones[i + 2];
-	//	v.Position.w = 1.0f; //Positions[i + 3];
-
-	//	v.Color = { 1.0f,1.0f,1.0f,1.0f };
-	//	BonesVerts.push_back(v);
-
-	//}
-
-	//sizetodrawBones = BonesVerts.size();
-
-	//D3D11_BUFFER_DESC bd2;
-	//ZeroMemory(&bd2, sizeof(bd2));
-
-	//bd2.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
-	//bd2.ByteWidth = sizeof(vertex) * BonesVerts.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
-	//bd2.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
-	//bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
-
-	//debugattribute.device->CreateBuffer(&bd2, NULL, &lineBuffery);       // create the buffer
-	//
-	////D3D11_SUBRESOURCE_DATA SUBRESy;
-	////SUBRESy.pSysMem = BonesVerts.data();
-	////SUBRESy.SysMemPitch = 0;
-	////SUBRESy.SysMemSlicePitch = 0;
-
-	//D3D11_MAPPED_SUBRESOURCE ms;
-	//debugattribute.device_context->Map(lineBuffery, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
-	//memcpy(ms.pData, BonesVerts.data(), BonesVerts.size()*sizeof(vertex));                 // copy the data
-	//debugattribute.device_context->Unmap(lineBuffery, NULL);
-
-	//CD3D11_BUFFER_DESC bdm(sizeof(leMatrix), D3D11_BIND_CONSTANT_BUFFER);
-	//debugattribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
 }
 
 void DirectXVault::bufferdemBones(std::vector<float>& _Bones) {
@@ -442,6 +410,8 @@ void DirectXVault::bufferdemBones(std::vector<float>& _Bones) {
 	memcpy(ms.pData, BonesVerts.data(), BonesVerts.size() * sizeof(vertex));                 // copy the data
 	debugattribute.device_context->Unmap(lineBuffery, NULL);
 
+
+
 	//CD3D11_BUFFER_DESC bdm(sizeof(leMatrix), D3D11_BIND_CONSTANT_BUFFER);
 	//debugattribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
 }
@@ -483,7 +453,8 @@ void DirectXVault::DrawTheCoolestLines() {
 	attribute.device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//// draw the vertex buffer to the back buffer
 	attribute.device_context->IASetVertexBuffers(0, 1, &lineBufferx, &stride, &offset);
-	attribute.device_context->Draw(sizetodraw, 0);
+	attribute.device_context->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	attribute.device_context->DrawIndexed(_indices.size(), 0,0);
 
 	if (!toggle)
 	{
