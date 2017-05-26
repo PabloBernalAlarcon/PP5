@@ -14,7 +14,7 @@ HINSTANCE hInst;
 FBXinteracts::Functions yee;
 std::vector<float> Bones;
 std::vector<float> vertices;
-std::vector<FBXinteracts::vert> verticesforReal;
+std::vector<FBXinteracts::vert> verticestemp;
 // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
@@ -22,6 +22,7 @@ HWND hWnd;
 int width = 1080;
 int height = 920;
 DirectXVault DXVault;
+std::vector<DirectXVault::vertex> vertFinal;
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -58,8 +59,30 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	freopen_s(&new_std_in_out, "CONIN$", "r", stdin);
 	std::cout << "Hello world!\n";
 	yee.SetupFBX();
+	
 	std::vector<uint32_t> jimmy = yee.getIndices();
-	verticesforReal = yee.getBecky();
+	verticestemp = yee.getBecky();
+
+	for (int i = 0; i < verticestemp.size(); i++)
+	{ 
+		DirectXVault::vertex temp;
+		temp.Position.x = verticestemp[i].Position[0];
+		temp.Position.y = verticestemp[i].Position[1];
+		temp.Position.z = verticestemp[i].Position[2];
+		temp.Position.w = 1;
+
+		temp.Color.x = verticestemp[i].Color[0];
+		temp.Color.y = verticestemp[i].Color[1];
+		temp.Color.z = verticestemp[i].Color[2];
+		temp.Color.w = verticestemp[i].Color[3];
+
+		temp.Normals.x = verticestemp[i].Normals[0];
+		temp.Normals.y = verticestemp[i].Normals[1];
+		temp.Normals.z = verticestemp[i].Normals[2];
+		temp.Normals.w = verticestemp[i].Normals[3];
+
+		vertFinal.push_back(temp);
+	}
 	for (int i = 0; i < yee.getvertsSize(); i++)
 	{
 		for (int j = 0; j <= 3; j++)
@@ -67,7 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			vertices.push_back(yee.getverts(i, j));
 		}
 	}
-	DXVault.Start(hWnd,vertices,jimmy);
+	DXVault.Start(hWnd,vertFinal,jimmy);
 	//std::cout << yee.GimmeSomething();
 	
 #endif

@@ -56,7 +56,7 @@ DirectXVault::~DirectXVault()
 }
 
 
-void DirectXVault::Start(HWND window, std::vector<float>& _Position, std::vector<uint32_t>& indices) {
+void DirectXVault::Start(HWND window, /*std::vector<float>& _Position*/std::vector< DirectXVault::vertex>& _Position, std::vector<uint32_t>& indices) {
 
 	wind = window;
 	_indices = indices;
@@ -320,15 +320,12 @@ void DirectXVault::BufferUpTheLines() {
 	std::vector<vertex>  OurVertices2;// = new std::vector<vertex>;
 
 	
-	for (int i = 0; i < Positions.size(); i+=4)
+	for (int i = 0; i < Positions.size(); i++)
 	{
 		vertex v;
-		v.Position.x = Positions[i];
-		v.Position.y = Positions[i + 1];
-		v.Position.z = Positions[i + 2];
-		v.Position.w = 1.0f; //Positions[i + 3];
-
-		v.Color = { 1.0f,0.0f,0.0f,1.0f };
+		v.Position = Positions[i].Position;
+		v.Color = Positions[i].Color;
+		v.Normals = Positions[i].Normals;
 		OurVerticesx.push_back(v);
 
 	}

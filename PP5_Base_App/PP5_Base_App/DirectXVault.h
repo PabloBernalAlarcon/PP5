@@ -65,7 +65,7 @@ struct vert {
 
 	ID3D11RasterizerState * mainRasterizer;
 	ID3D11RasterizerState * debugRasterizer;
-	std::vector<float> Positions;
+	std::vector<vertex> Positions;
 	std::vector<float> Bones;
 	std::vector<uint32_t> _indices;
 	int sizetodraw;
@@ -98,7 +98,7 @@ struct vert {
 
 	HWND wind;
 
-	void Start(HWND window, std::vector<float>& _Position, std::vector<uint32_t> &indices);
+	void Start(HWND window, std::vector<DirectXVault::vertex>& _Position, std::vector<uint32_t> &indices);
 	void Render();
 	void SetUpShadersForACoolTriangle();
 	void BufferUpTheTriangle();
