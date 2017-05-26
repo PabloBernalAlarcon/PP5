@@ -18,6 +18,7 @@ namespace FBXinteracts
 	struct vert {
 		float Position[4];
 		float Color[4];
+		float Normals[4];
 		int BoneId[4];
 		float Weights[4];
 	};
@@ -60,6 +61,8 @@ namespace FBXinteracts
 		static FBXINTERACTION_API float getPositions(unsigned int indicesVec);
 
 		static FBXINTERACTION_API AnimClip getAnimation() { return animation; }
+
+		FBXINTERACTION_API std::vector<vert> getBecky();
 
 	};
 }

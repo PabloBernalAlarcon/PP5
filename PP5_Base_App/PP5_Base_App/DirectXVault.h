@@ -17,7 +17,11 @@ public:
 ID3D11Debug * whatyouplease = nullptr;
 	
 
-
+struct vert {
+	float Position[4];
+	float Color[4];
+	float Normals[4];
+};
 	struct pipeline_state_t
 	{
 		ID3D11InputLayout *input_layout = nullptr;
@@ -46,6 +50,7 @@ ID3D11Debug * whatyouplease = nullptr;
 	struct vertex {
 		DirectX::XMFLOAT4 Position;
 		DirectX::XMFLOAT4 Color;
+		DirectX::XMFLOAT4 Normals;
 	};
 
 

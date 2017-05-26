@@ -104,15 +104,9 @@ namespace FBXinteracts {
 		
 		FbxMesh * leMesh = pNode->GetMesh();
 		FbxGeometryElementNormal* lNormalElement = leMesh->GetElementNormal();
+		std::vector<vert> tempvert;
 		
-		for (int i = 0; i < leMesh->GetPolygonCount(); i++)
-		{
-		
-			Indices.push_back(leMesh->GetPolygonVertex(i, 0));
-			Indices.push_back(leMesh->GetPolygonVertex(i, 1));
-			Indices.push_back(leMesh->GetPolygonVertex(i, 2));
-
-		}
+	
 		
 		for (int i = 0; i < leMesh->GetControlPointsCount(); i++)
 		{
@@ -135,8 +129,39 @@ namespace FBXinteracts {
 			ben.Position[1] = holden.mData[1];
 			ben.Position[2] = holden.mData[2];
 			ben.Position[3] = holden.mData[3];
-			
+		//	tempvert.push_back(ben);
 			becky.push_back(ben);
+		}
+		FbxStringList list;
+		leMesh->GetUVSetNames(list);
+		for (int i = 0; i < leMesh->GetPolygonCount(); i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				Indices.push_back(leMesh->GetPolygonVertex(i, j));
+
+				vert ron = becky[leMesh->GetPolygonVertex(i,j)];
+				
+				FbxVector2 uvs;
+				FbxVector4 norms;
+				bool map;
+				if (leMesh->GetPolygonVertexUV(i, j, list.GetStringAt(0),uvs, map) )
+				{
+					becky[leMesh->GetPolygonVertex(i,j)].Color[0] = uvs[0];
+					becky[leMesh->GetPolygonVertex(i,j)].Color[1] = uvs[1];
+					becky[leMesh->GetPolygonVertex(i,j)].Color[2] = 0;
+					becky[leMesh->GetPolygonVertex(i,j)].Color[3] = 1;
+				}
+				if (leMesh->GetPolygonVertexNormal(i,j,norms))
+				{
+					becky[leMesh->GetPolygonVertex(i,j)].Normals[0] = norms[0];
+					becky[leMesh->GetPolygonVertex(i,j)].Normals[1] = norms[1];
+					becky[leMesh->GetPolygonVertex(i,j)].Normals[2] = norms[2];
+					becky[leMesh->GetPolygonVertex(i,j)].Normals[3] = norms[3];
+				}
+				
+			}
+			
 		}
 	}
 	/**
@@ -289,6 +314,8 @@ namespace FBXinteracts {
 	unsigned int Functions::getvertsSize() {
 		return becky.size();
 	}
-
+	std::vector<vert> Functions::getBecky() {
+		return becky;
+	}
 	std::vector<uint32_t> Functions::getIndices() { return Indices; }
 }

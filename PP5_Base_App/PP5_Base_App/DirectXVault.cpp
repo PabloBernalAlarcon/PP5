@@ -28,7 +28,9 @@ DirectXVault::~DirectXVault()
 	if(pipelineState.depthStencilState!= nullptr)pipelineState.depthStencilState->Release();
 	if (debugpipelineState.depthStencilState != nullptr) debugpipelineState.depthStencilState->Release();
 	if(pipelineState.rasterState != nullptr)pipelineState.rasterState->Release();
-	if (debugpipelineState.rasterState != nullptr)pipelineState.rasterState->Release();
+	if (debugpipelineState.rasterState != nullptr)debugpipelineState.rasterState->Release();
+	if (pipelineState.rasterState != nullptr)pipelineState.debugRasterState->Release();
+	if (debugpipelineState.rasterState != nullptr)debugpipelineState.debugRasterState->Release();
 	if(pipelineState.depthStencilView != nullptr) pipelineState.depthStencilView->Release();
 	pipelineState.indexbuffer->Release();
 	attribute.device->Release();
@@ -47,6 +49,7 @@ DirectXVault::~DirectXVault()
 	lineBuffery->Release();
 	//lineBufferz->Release();
 	GridBuffer->Release();
+	IndexBuffer->Release();
 	//lineBufferz->Release();
 	whatyouplease->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 	whatyouplease->Release();
@@ -390,6 +393,9 @@ void DirectXVault::bufferdemBones(std::vector<float>& _Bones) {
 
 	sizetodrawBones = BonesVerts.size();
 
+	if (lineBuffery == nullptr)
+	{
+
 	D3D11_BUFFER_DESC bd2;
 	ZeroMemory(&bd2, sizeof(bd2));
 
@@ -400,6 +406,7 @@ void DirectXVault::bufferdemBones(std::vector<float>& _Bones) {
 
 	debugattribute.device->CreateBuffer(&bd2, NULL, &lineBuffery);       // create the buffer
 
+	}
 																		 //D3D11_SUBRESOURCE_DATA SUBRESy;
 																		 //SUBRESy.pSysMem = BonesVerts.data();
 																		 //SUBRESy.SysMemPitch = 0;
