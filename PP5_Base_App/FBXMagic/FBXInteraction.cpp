@@ -54,7 +54,36 @@ namespace FBXinteracts {
 		default: return "unknown";
 		}
 	}
+	void AnimateTheMagic(FbxNode * pNode, Bone * b) {
+		AnimClip anim;
 
+		FbxAnimStack * animstack = lScene->GetCurrentAnimationStack();
+		for (int i = 0; i < animstack->GetMemberCount(); i++)
+		{
+			KeyFrame temp;
+			FbxAnimLayer * layer = (FbxAnimLayer*)animstack->GetMember(i);
+			FbxAnimCurve * curve = pNode->LclTranslation.GetCurve(layer);
+			if (curve != 0)
+			{
+				for (int j = 0; j < curve->KeyGetCount(); j++)
+				{
+					FbxTime keylenght = curve->KeyGetTime(j);
+					FbxMatrix mat = pNode->EvaluateGlobalTransform(keylenght);
+					//gut??
+					for (int k = 0; k < 4; k++)
+					{
+						for (int l = 0; l < 4; l++)
+						{
+							temp.Matrix[k * 4 + l] = mat.Get(k, l);
+						}
+					}
+					anim.keys.push_back(temp);
+				}
+			}
+		}
+		b->animations.push_back(anim);
+
+	}
 	/**
 	* Print an attribute.
 	*/
@@ -70,36 +99,120 @@ namespace FBXinteracts {
 	FbxPose * BindPose;
 	struct my_fbx_joint { FbxNode* node; int parent_index; };
 
-	void LoadBone(FbxNode * pNode, FbxDouble3 StoredP, KeyFrame * currFrame, FbxTime duration) {
-
-		vert parent;
+	 void Functions::LoadModel(Model * model) {
+		FbxNode * leNode = nullptr;
+		bool doBones = true;
+		for (int i = 0; i < root->GetChildCount(); i++)
+		{
+			FbxNode * child = root->GetChild(i);
+			for (int j = 0; j < child->GetNodeAttributeCount(); j++)
+			{
+				FbxNodeAttribute* att = child->GetNodeAttributeByIndex(j);
+				int type = att->GetAttributeType();
+				if (type == FbxNodeAttribute::eMesh)
+				{
+					leNode = child;
+				}
+				else if (type == FbxNodeAttribute::eSkeleton) 
+				{
+					if (doBones)
+					{
+					//leNode = child;
+					// do the proccess skeleton
+						doBones = false;
+					}
+				}
+			}
+			FbxMesh * newMesh = child->GetMesh();
+		}
+		if (leNode != nullptr)
+		{
+			// process mesh and material.
+		}
+		//vert parent;
+		//for (int i = 0; i < pNode->GetChildCount(); i++)
+		//{
+		//	vert child;
+		//	//FbxDouble3 translationChild = pNode->GetChild(i)->LclTranslation.Get();
+		//	FbxDouble3 translationChild = pNode->GetChild(i)->EvaluateGlobalTransform(duration).GetT();
+		//	parent.Position[0] = StoredP[0];
+		//	parent.Position[1] = StoredP[1];
+		//	parent.Position[2] = StoredP[2];
+		//	parent.Position[3] = 1.0f;
+		//	
+		//	child.Position[0] = (translationChild[0]);
+		//	child.Position[1] = (translationChild[1]);
+		//	child.Position[2] = (translationChild[2]);
+		//	child.Position[3] = (1.0f);
+		//	currFrame->verts.push_back(parent);
+		//	currFrame->verts.push_back(child);
+		//	FbxDouble3 P;
+		//	P[0] = translationChild[0];
+		//	P[1] = translationChild[1];
+		//	P[2] = translationChild[2];
+		//	LoadBone(pNode->GetChild(i), P,currFrame,duration);
+		//	//me, child, call func on child
+		//}
+	}
+	void addChildBone(Model * model, Bone * bone, FbxNode * pNode) {
 		for (int i = 0; i < pNode->GetChildCount(); i++)
 		{
-			vert child;
-			//FbxDouble3 translationChild = pNode->GetChild(i)->LclTranslation.Get();
-			FbxDouble3 translationChild = pNode->GetChild(i)->EvaluateGlobalTransform(duration).GetT();
-			parent.Position[0] = StoredP[0];
-			parent.Position[1] = StoredP[1];
-			parent.Position[2] = StoredP[2];
-			parent.Position[3] = 1.0f;
-			
-			child.Position[0] = (translationChild[0] );
-			child.Position[1] = (translationChild[1]);
-			child.Position[2] = (translationChild[2]);
-			child.Position[3] = (1.0f);
-			currFrame->bones.push_back(parent);
-			currFrame->bones.push_back(child);
-			FbxDouble3 P;
-			P[0] = translationChild[0];
-			P[1] = translationChild[1];
-			P[2] = translationChild[2];
-			LoadBone(pNode->GetChild(i), P,currFrame,duration);
-			//me, child, call func on child
+			FbxNode * child = pNode->GetChild(i);
+			Bone * b = new Bone();
+			b->parent = bone;
+		    FbxAMatrix mat = child->EvaluateGlobalTransform(0);
+			for (int i = 0; i < 3; i++)
+				b->verts[i] = mat.GetT().mData[i];
+			for (int i = 3; i < 8; i++)
+				b->verts[i] = 1;
+
+			//gut??
+			for (int k = 0; k < 4; k++)
+			{
+				for (int l = 0; l < 4; l++)
+				{
+					b->Matrix[k*4 + l] = mat.Get(k, l);
+				}
+			}
+
+			addChildBone(model, b, child);
+			AnimateTheMagic(child, bone);
+			b->ID = model->bones.size();
+			b->name = child->GetName();
+			model->bones.push_back(b);
+			bone->children.push_back(b);
+
 		}
 	}
+	
+	void LoadBone(FbxNode * pNode, Model * model) {
 
+		FbxDouble3 pos = pNode->LclTranslation.Get();
+		Bone* dad = new Bone();
+		FbxAMatrix mat = pNode->EvaluateGlobalTransform(0);
+		FbxVector4 T = mat.GetT();
+		for (int i = 0; i < 3; i++)
+			dad->verts[i] = T.mData[i];
+		for (int i = 3; i < 8; i++)
+			dad->verts[i] = 1;
+		
+		// ?????????????? mayeb?
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				dad->Matrix[i*4 + j] = mat.Get(i, j);
+			}
+		}
 
-
+		
+		AnimateTheMagic(pNode, dad);
+		dad->ID = model->bones.size();
+		dad->name = pNode->GetName();
+		model->bones.push_back(dad);
+		addChildBone(model, dad, pNode);
+		model->root = dad;
+	}
 	void LoadNode(FbxNode * pNode) {
 		
 		FbxMesh * leMesh = pNode->GetMesh();
@@ -117,7 +230,6 @@ namespace FBXinteracts {
 
 		}
 		//FbxGeometryElementNormal* lNormalElement = leMesh->GetElementNormal();
-			int ttt = leMesh->GetPolygonCount();
 		
 			FbxStringList uvlist;
 			leMesh->GetUVSetNames(uvlist);
@@ -149,7 +261,6 @@ namespace FBXinteracts {
 			shrek.push_back(ben);
 		}
 
-		int tiddy =Indices.size();
 		
 		for (int i = 0; i < leMesh->GetControlPointsCount(); i++)
 		{
@@ -177,7 +288,6 @@ namespace FBXinteracts {
 			becky.push_back(ben);
 		}
 
-		int oo =becky.size();
 	}
 
 	/**
@@ -225,7 +335,7 @@ namespace FBXinteracts {
 						KeyFrame currFrame;
 						TimeDuration.SetFrame(i, FbxTime::EMode::eFrames24);
 						currFrame.time = TimeDuration.GetSecondDouble();
-					LoadBone(pNode, pNode->EvaluateGlobalTransform(TimeDuration).GetT(),&currFrame,TimeDuration);
+					//LoadBone(pNode, pNode->EvaluateGlobalTransform(TimeDuration).GetT(),&currFrame,TimeDuration);
 					animation.keys.push_back(currFrame);
 					
 					}

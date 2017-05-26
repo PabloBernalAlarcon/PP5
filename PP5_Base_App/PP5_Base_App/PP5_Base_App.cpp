@@ -6,18 +6,23 @@
 #include <iostream>
 #include "DirectXVault.h"
 #include <chrono>
+#include <vector>
 #include "../FBXMagic/FBXInteraction.h"
 #define MAX_LOADSTRING 100
-
 // Global Variables:
 HINSTANCE hInst;    
 FBXinteracts::Functions yee;
 FBXinteracts::Functions weap;
 std::vector<float> Bones;
 std::vector<float> vertices;
-
+FBXinteracts::Model model;
 std::vector<float> WeapBones;
 std::vector<float> Weapvertices;
+
+void InversePos(DirectXVault* vault, FBXinteracts::Model * _model) {
+	std::vector<DirectX::XMFLOAT4X4> newpos;
+	for each( FBXinteracts::Bone * b in _model->bones)
+}
 // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
@@ -98,7 +103,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	FBXinteracts::AnimClip anims = yee.getAnimation();
     while (!stopYouCuck)
     {
-		totalTime += (std::chrono::system_clock::now() - notNow).count() / 1000000000.0f;
+		totalTime += (std::chrono::system_clock::now() - notNow).count() / 10000000.0f;
 		notNow = std::chrono::system_clock::now();
 
 		while (PeekMessageA(&msg, nullptr, 0, 0,PM_REMOVE))
@@ -151,7 +156,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		float ratio = timeIn / timeDiff;
 		std::vector<FBXinteracts::vert> CurrJoints; // yee.getAnimation().keys[prevFrame].bones;
-		for (int i = 0; i < anims.keys[prevFrame].bones.size(); i++)
+		/*for (int i = 0; i < anims.keys[prevFrame].bones.size(); i++)
 		{
 			FBXinteracts::vert v1, v2,v3;
 			v1 = anims.keys[prevFrame].bones[i];
@@ -159,13 +164,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			v3.Position[0] = (v2.Position[0] - v1.Position[0])*ratio + v1.Position[0];
 			v3.Position[1] = (v2.Position[1] - v1.Position[1])*ratio + v1.Position[1];
 			v3.Position[2] = (v2.Position[2] - v1.Position[2])*ratio + v1.Position[2];
-			v3.Position[3] = 1.0f;
+			v3.Position[3] = 1.0f;		   					 						  
 
 			CurrJoints.push_back(v3);
-		}
-		//FBXinteracts::AnimClip somso = yee.getAnimation();
-		//yee.getAnim();
-		//MeshPositions = yee.getPositions();
+		}*/
+		
 		Bones.clear();
 		for (int i = 0; i < /*jimmy.size()*/CurrJoints.size(); i++)
 		{
