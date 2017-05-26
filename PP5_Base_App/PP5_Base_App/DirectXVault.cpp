@@ -29,9 +29,7 @@ if(debugpipelineState.pixel_shader != nullptr)	debugpipelineState.pixel_shader->
 	if(pipelineState.depthStencilState!= nullptr)pipelineState.depthStencilState->Release();
 	if (debugpipelineState.depthStencilState != nullptr) debugpipelineState.depthStencilState->Release();
 	if(pipelineState.rasterState != nullptr)pipelineState.rasterState->Release();
-	if (debugpipelineState.rasterState != nullptr)debugpipelineState.rasterState->Release();
-	if (debugpipelineState.debugRasterState != nullptr)debugpipelineState.debugRasterState->Release();
-	if (pipelineState.debugRasterState != nullptr)pipelineState.debugRasterState->Release();
+	if (debugpipelineState.rasterState != nullptr)pipelineState.rasterState->Release();
 	if(pipelineState.depthStencilView != nullptr) pipelineState.depthStencilView->Release();
 	if(pipelineState.indexbuffer != nullptr)	pipelineState.indexbuffer->Release();
 	if (attribute.device != nullptr) attribute.device->Release();
@@ -48,8 +46,6 @@ if(debugpipelineState.pixel_shader != nullptr)	debugpipelineState.pixel_shader->
 	matBuffer->Release();
 	lineBufferx->Release();
 	lineBuffery->Release();
-	IndexBuffer->Release();
-	WeapIndexBuffer->Release();
 	//lineBufferz->Release();
 	GridBuffer->Release();
 	//lineBufferz->Release();
@@ -428,32 +424,28 @@ void DirectXVault::bufferdemBones(std::vector<float>& _Bones) {
 	}
 
 	sizetodrawBones = BonesVerts.size();
-	if (lineBuffery == nullptr)
-	{
+
+	D3D11_BUFFER_DESC bd2;
+	ZeroMemory(&bd2, sizeof(bd2));
+
+	bd2.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
+	bd2.ByteWidth = sizeof(vertex) * BonesVerts.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
+	bd2.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
+	bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
+
+	debugattribute.device->CreateBuffer(&bd2, NULL, &lineBuffery);       // create the buffer
+
+																		 //D3D11_SUBRESOURCE_DATA SUBRESy;
+																		 //SUBRESy.pSysMem = BonesVerts.data();
+																		 //SUBRESy.SysMemPitch = 0;
+																		 //SUBRESy.SysMemSlicePitch = 0;
+
+	D3D11_MAPPED_SUBRESOURCE ms;
+	debugattribute.device_context->Map(lineBuffery, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
+	memcpy(ms.pData, BonesVerts.data(), BonesVerts.size() * sizeof(vertex));                 // copy the data
+	debugattribute.device_context->Unmap(lineBuffery, NULL);
 
 
-		D3D11_BUFFER_DESC bd2;
-		ZeroMemory(&bd2, sizeof(bd2));
-
-		bd2.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
-		bd2.ByteWidth = sizeof(vertex) * BonesVerts.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
-		bd2.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
-		bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
-
-		debugattribute.device->CreateBuffer(&bd2, NULL, &lineBuffery);       // create the buffer
-
-																			 //D3D11_SUBRESOURCE_DATA SUBRESy;
-																			 //SUBRESy.pSysMem = BonesVerts.data();
-																			 //SUBRESy.SysMemPitch = 0;
-																			 //SUBRESy.SysMemSlicePitch = 0;
-
-	}
-		D3D11_MAPPED_SUBRESOURCE ms;
-		debugattribute.device_context->Map(lineBuffery, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
-		memcpy(ms.pData, BonesVerts.data(), BonesVerts.size() * sizeof(vertex));                 // copy the data
-		debugattribute.device_context->Unmap(lineBuffery, NULL);
-
-	
 
 	//CD3D11_BUFFER_DESC bdm(sizeof(leMatrix), D3D11_BIND_CONSTANT_BUFFER);
 	//debugattribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
