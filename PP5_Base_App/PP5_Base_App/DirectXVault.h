@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 #include <vector>
+#include "WICTextureLoader.h"
 class DirectXVault
 {
 public:
@@ -17,11 +18,7 @@ public:
 ID3D11Debug * whatyouplease = nullptr;
 	
 
-struct vert {
-	float Position[4];
-	float Color[4];
-	float Normals[4];
-};
+
 	struct pipeline_state_t
 	{
 		ID3D11InputLayout *input_layout = nullptr;
@@ -45,6 +42,9 @@ struct vert {
 		D3D_DRIVER_TYPE driver_type;
 		D3D_FEATURE_LEVEL feature_levels;
 		D3D11_VIEWPORT viewport;
+		ID3D11SamplerState *sampler;
+		ID3D11ShaderResourceView *resourceView;
+
 	};
 
 	struct vertex {
@@ -62,7 +62,15 @@ struct vert {
 
 	};
 
-
+	struct LightInfo {
+		DirectX::XMFLOAT3 lightPosition;
+		float yee0;
+		DirectX::XMFLOAT3 lightDirection;
+		float yee1;
+		DirectX::XMFLOAT4 lightColor;
+		float yee2;
+		DirectX::XMFLOAT3 yees;
+	};
 	ID3D11RasterizerState * mainRasterizer;
 	ID3D11RasterizerState * debugRasterizer;
 	std::vector<vertex> Positions;
@@ -92,6 +100,9 @@ struct vert {
 	ID3D11Buffer* lineBuffery = nullptr;
 	ID3D11Buffer* GridBuffer = nullptr;
 	//ID3D11Buffer* lineBufferz = nullptr;
+
+	ID3D11Buffer* pointLightBuffer = nullptr;
+	LightInfo lightData;
 
 	POINT MousePos;
 	//POINT NewMousePos;

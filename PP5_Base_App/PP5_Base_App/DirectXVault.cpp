@@ -32,6 +32,8 @@ DirectXVault::~DirectXVault()
 	if (pipelineState.rasterState != nullptr)pipelineState.debugRasterState->Release();
 	if (debugpipelineState.rasterState != nullptr)debugpipelineState.debugRasterState->Release();
 	if(pipelineState.depthStencilView != nullptr) pipelineState.depthStencilView->Release();
+	if (attribute.sampler != nullptr) attribute.sampler->Release();
+	if (attribute.resourceView != nullptr) attribute.resourceView->Release();
 	pipelineState.indexbuffer->Release();
 	attribute.device->Release();
 	if (attribute.device_context) attribute.device_context->Release();
@@ -50,6 +52,7 @@ DirectXVault::~DirectXVault()
 	//lineBufferz->Release();
 	GridBuffer->Release();
 	IndexBuffer->Release();
+	pointLightBuffer->Release();
 	//lineBufferz->Release();
 	whatyouplease->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 	whatyouplease->Release();
@@ -310,6 +313,13 @@ void DirectXVault::BufferUpTheGrid() {
 	CD3D11_BUFFER_DESC bdm(sizeof(leMatrix), D3D11_BIND_CONSTANT_BUFFER);
 	attribute.device->CreateBuffer(&bdm, NULL, &matBuffer);
 
+	CD3D11_BUFFER_DESC pointLightConstantBufferDesc(sizeof(LightInfo), D3D11_BIND_CONSTANT_BUFFER);
+	attribute.device->CreateBuffer(&pointLightConstantBufferDesc, nullptr, &pointLightBuffer);
+	lightData.lightColor = { 1.0f,1.0f,1.0f,1.0f };
+	lightData.lightDirection = { 0.0f,1.0f,1.0f };
+	lightData.lightPosition = { 0.0f,0.0f,-10.0f };
+	lightData.radius = 30.0f;
+
 }
 
 void DirectXVault::BufferUpTheLines() {
@@ -345,6 +355,17 @@ void DirectXVault::BufferUpTheLines() {
 	sizetodraw = OurVerticesx.size();
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
+
+	D3D11_SAMPLER_DESC samdes;
+	ZeroMemory(&samdes, sizeof(samdes));
+	samdes.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samdes.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samdes.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samdes.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+
+	attribute.device->CreateSamplerState(&samdes, &attribute.sampler);
+
+	DirectX::CreateWICTextureFromFile(attribute.device, attribute.device_context, L"Teddy_D.png", NULL, &attribute.resourceView);
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
 	bd.ByteWidth = sizeof(vertex) * OurVerticesx.size();    // Positions.size() /3 size is the VERTEX struct * 2 (6)
@@ -458,6 +479,10 @@ void DirectXVault::DrawTheCoolestLines() {
 	//// draw the vertex buffer to the back buffer
 	attribute.device_context->IASetVertexBuffers(0, 1, &lineBufferx, &stride, &offset);
 	attribute.device_context->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	attribute.device_context->PSSetShaderResources(0, 1, &attribute.resourceView);
+	attribute.device_context->PSSetSamplers(0, 1, &attribute.sampler);
+
 	attribute.device_context->DrawIndexed(_indices.size(), 0,0);
 
 	if (!toggle)
@@ -511,6 +536,7 @@ void DirectXVault::GimmeACamera() {
 	XMStoreFloat4x4(&matrix.projection, projj);
 	
 	//XMStoreFloat4x4(&matrix.translation, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye, at, up)));
+	
 	
 }
 
