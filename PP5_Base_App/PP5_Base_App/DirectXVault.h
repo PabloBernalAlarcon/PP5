@@ -68,7 +68,7 @@ ID3D11Debug * whatyouplease = nullptr;
 		DirectX::XMFLOAT3 lightDirection;
 		float yee1;
 		DirectX::XMFLOAT4 lightColor;
-		float yee2;
+		float radius;
 		DirectX::XMFLOAT3 yees;
 	};
 	ID3D11RasterizerState * mainRasterizer;
