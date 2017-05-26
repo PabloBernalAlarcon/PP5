@@ -44,21 +44,22 @@ namespace FBXinteracts
 	public:
 		
 		// Returns a + b  
-		 FBXINTERACTION_API int  GimmeSomething();
+		static FBXINTERACTION_API int  GimmeSomething();
 
-		 FBXINTERACTION_API void SetupFBX(const char* lFilename);
+		static FBXINTERACTION_API void SetupFBX();
 
-		 FBXINTERACTION_API float getverts(unsigned int indicesVec, unsigned int indicesArr);
 
-		 FBXINTERACTION_API unsigned int getvertsSize();
+		static FBXINTERACTION_API float getverts(unsigned int indicesVec, unsigned int indicesArr);
 
-		 FBXINTERACTION_API unsigned int getPositionsSize();
+		static FBXINTERACTION_API unsigned int getvertsSize();
+
+		static FBXINTERACTION_API unsigned int getPositionsSize();
 
 		FBXINTERACTION_API std::vector<uint32_t> getIndices();
 
-		 FBXINTERACTION_API float getPositions(unsigned int indicesVec);
+		static FBXINTERACTION_API float getPositions(unsigned int indicesVec);
 
-		 FBXINTERACTION_API AnimClip getAnimation() { return animation; }
+		static FBXINTERACTION_API AnimClip getAnimation() { return animation; }
 
 	};
 }
